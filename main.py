@@ -11,8 +11,6 @@ from lipinski_plots import lipinski_plots as lp
 from numpy.random import seed
 from numpy.random import randn
 from scipy.stats import mannwhitneyu
-import matplotlib.pyplot as plt
-import subprocess
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import VarianceThreshold
@@ -20,31 +18,46 @@ import seaborn as sns
 sns.set(style='ticks')
 import matplotlib.pyplot as plt
 
+
+#this function retrieves data (compounds and their molecular info) for a specific target (e.g coronavirus)
 def retrievedata():
     target = new_client.target
-    target_query = target.search('coronavirus')
+    target_query = target.search('CHEMBL325')
     targets = pd.DataFrame.from_dict(target_query)
-    selected_target = targets.target_chembl_id[1]
+    selected_target = targets.target_chembl_id[0]
+    print(selected_target)
     activity = new_client.activity
     res = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50")
+    print(len(res))
     df = pd.DataFrame.from_dict(res)
-    if df.empty:
-        print("No IC50 vals.")
+    if df.empty or len(df) < 25:
+        print("This data frame has little to no IC50 values.")
         return
-    df2 = df[df.standard_value.notna()]
-    print(len(df2))
-    df2 = df2.loc[df2.standard_value != '0.0']
-    print(len(df2))
-    df2 = df2[df.canonical_smiles.notna()]
-    df2 = df2.drop_duplicates(['canonical_smiles'])
-    preprocess(df2)
+    preprocess(df)
 
-def preprocess(df2):
+#this function preprocesses the data by subsetting to a
+def preprocess(df):
+    #subset for non NAs
+    subset = df[df.standard_value.notna()]
+    print(len(subset))
+    #subset for non 0 IC50
+    subset = subset.loc[subset.standard_value != '0.0']
+    print(len(subset))
+    #subset for those with canonical smiles data
+    subset = subset[df.canonical_smiles.notna()]
+    #drop duplicates
+    subset = subset.drop_duplicates(['canonical_smiles'])
+
+    #we only want the chem ID, canonical smiles info, and the IC50
     selection = ['molecule_chembl_id', 'canonical_smiles', 'standard_value']
-    df3 = df2[selection]
-    df3.to_csv('bioactivity_data_preprocessed.csv', index=False)
-    labelcompounds(df3)
-10
+    subset = subset[selection]
+
+    #now we label compounds based on their activity
+    labelcompounds(subset)
+
+
+#This function labels compounds based on their IC50: inactive, active, or intermediate and "cleans"
+#canonical smiles data for the longest segment in between '.'s
 def labelcompounds(df):
     bioactivity_threshold = []
     for i in df.standard_value:
@@ -54,22 +67,35 @@ def labelcompounds(df):
             bioactivity_threshold.append("active")
         else:
             bioactivity_threshold.append("intermediate")
+
+    #turn the list into a series
     bioactivity_class = pd.Series(bioactivity_threshold, name='class')
     df.reset_index(drop=True, inplace=True)
-    df2 = pd.concat([df, bioactivity_class], axis=1)
-    df_no_smiles = df2.drop(columns='canonical_smiles')
+
+    #adds the class column to df
+    labeled = pd.concat([df, bioactivity_class], axis=1)
+
+    #removes the current canonical smiles
+    labeled_no_smiles = labeled.drop(columns='canonical_smiles')
     smiles = []
 
+    #get the highlighted parts of the canonical smiles data
     for i in df.canonical_smiles.tolist():
         cpd = str(i).split('.')
         cpd_longest = max(cpd, key=len)
         smiles.append(cpd_longest)
 
+    #adding the highlighted parts of can. smiles data
     smiles = pd.Series(smiles, name='canonical_smiles')
-    df_cleaned_smiles = pd.concat([df_no_smiles, smiles], axis=1)
-    evaluate_drug(df2, df_cleaned_smiles)
+    df_cleaned_smiles = pd.concat([labeled_no_smiles, smiles], axis=1)
 
+    #now, we evaluate based on lipinski descriptors
+    evaluate_drug(labeled, df_cleaned_smiles)
+
+#this function uses the 5 lipinski descriptors to evaluate the compounds via a Mann-whitney test
+# and graphs the data with matplotlib
 def evaluate_drug(df, df_cleaned_smiles):
+
     #appends lipinski descriptors to dataframe
     df_lipinski = lipinski_descriptors(df_cleaned_smiles.canonical_smiles)
     df_combined = pd.concat([df, df_lipinski], axis=1)
@@ -79,22 +105,26 @@ def evaluate_drug(df, df_cleaned_smiles):
     #turns IC50 to pIC50
     df_final = to_pIC50(df_normal)
 
-    df_final.to_csv('bioactivity_data_final.csv', index=False)
-    df_2class = df_final[df_final['class'] != 'intermediate']
-    lipinskiplot = lp(df_2class)
-    lipinskiplot.bar_graph(df_2class)
-    lipinskiplot.scatter_plot(df_2class)
-    lipinskiplot.pIC_50_plot(df_2class)
-    print(mannwhitney(df, df_2class, 'pIC50'))
-    lipinskiplot.mol_weight(df_2class)
-    print(mannwhitney(df, df_2class, 'MW'))
-    lipinskiplot.logP(df_2class)
-    print(mannwhitney(df, df_2class, 'LogP'))
-    lipinskiplot.num_hdonors(df_2class)
-    print(mannwhitney(df, df_2class, 'NumHDonors'))
-    lipinskiplot.num_hacceptors(df_2class)
-    print(mannwhitney(df, df_2class, 'NumHAcceptors'))
+    #saves final data to csv for reference
+    df_final.to_csv('bioactivity_final.csv', index=False)
 
+    #testing_df subsets for active and inactive values
+    testing_df = df_final[df_final['class'] != 'intermediate']
+    lipinskiplot = lp(testing_df)
+    lipinskiplot.bar_graph(testing_df)
+    lipinskiplot.scatter_plot(testing_df)
+    lipinskiplot.pIC_50_plot(testing_df)
+    print(mannwhitney(df, testing_df, 'pIC50'))
+    lipinskiplot.mol_weight(testing_df)
+    print(mannwhitney(df, testing_df, 'MW'))
+    lipinskiplot.logP(testing_df)
+    print(mannwhitney(df, testing_df, 'LogP'))
+    lipinskiplot.num_hdonors(testing_df)
+    print(mannwhitney(df, testing_df, 'NumHDonors'))
+    lipinskiplot.num_hacceptors(testing_df)
+    print(mannwhitney(df, testing_df, 'NumHAcceptors'))
+
+# changes IC50 to pIC50
 def to_pIC50(input):
     pIC50 = []
 
@@ -107,7 +137,7 @@ def to_pIC50(input):
 
     return x
 
-
+#normalizes the IC50
 def norm_values(input):
     norm = []
 
@@ -122,6 +152,7 @@ def norm_values(input):
 
     return x
 
+#calculates the lipinski descriptors based on chemical information
 def lipinski_descriptors(smiles, verbose=False):
     # Inspired by: https://codeocean.com/explore/capsules?query=tag:data-curation
     moldata = []
@@ -154,7 +185,7 @@ def lipinski_descriptors(smiles, verbose=False):
 
     return descriptors
 
-
+#performs Mann Whitney test and outputs null hypothesis reject/fail to reject
 def mannwhitney(df, df_2class, descriptor, verbose=False):
     # https://machinelearningmastery.com/nonparametric-statistical-significance-tests-in-python/
     # seed the random number generator
@@ -193,16 +224,28 @@ def mannwhitney(df, df_2class, descriptor, verbose=False):
     return results
 
 def predict_from_pIC50():
-    df = pd.read_csv('bioactivity_data_final.csv')
+    df = pd.read_csv('bioactivity_final.csv')
     selection = ['canonical_smiles', 'molecule_chembl_id']
     df_selection = df[selection]
     df_selection.to_csv('molecule.smi', sep='\t', index=False, header=False)
-    subprocess.run(["python.exe",".\padel.sh"])
+    print("\n\n\n", "-" * 75)
+    print("Now, you need to run \" bash padel.sh\" in Git for Windows or another shell/command prompt that supports bash.")
+    print("This is necessary to retrieve the PaDEL descriptors for the Random Forest regression!")
+    print("-" * 75,"\n\n\n")
+    valid_ans = False
+    while(not valid_ans):
+        ans = input("\n\n\nDid you run \" bash padel.sh\" yet? (Y/N):    ")
+        if(ans.upper() == "Y"):
+            valid_ans = True
+        elif(ans.upper() == "N"):
+            print("Run the \" bash padel.sh\" command to get the PaDEL descriptors.")
+        else:
+            print("Please enter a valid command: (Y/N)")
     X = pd.read_csv('descriptors_output.csv').drop(columns=['Name'])
     Y = df['pIC50']
     #relating pIC50 to the molecular descriptors
     dataset = pd.concat([X, Y], axis=1)
-    dataset.tocsv('bioactivity_data_pubchem_padel.csv')
+    dataset.to_csv('bioactivity_data_pubchem_padel.csv')
     selection = VarianceThreshold(threshold=(.8 * (1 - .8)))
     X = selection.fit_transform(X)
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
@@ -210,19 +253,33 @@ def predict_from_pIC50():
     model.fit(X_train, Y_train)
     r2 = model.score(X_test, Y_test)
     predictions = model.predict(X_test)
-
+    plt.clf()
     sns.set(color_codes=True)
     sns.set_style("white")
 
-    ax = sns.regplot(Y_test, predictions, scatter_kws={'alpha': 0.4})
-    ax.set_xlabel('Experimental pIC50', fontsize='large', fontweight='bold')
-    ax.set_ylabel('Predicted pIC50', fontsize='large', fontweight='bold')
-    ax.set_xlim(0, 12)
-    ax.set_ylim(0, 12)
-    ax.figure.set_size_inches(5, 5)
-    plt.show
+    ax = sns.regplot(x = Y_test, y = predictions, scatter_kws={'alpha': 0.4})
+    ax.set_xlabel(xlabel = 'Experimental pIC50', fontsize='large', fontweight='bold')
+    ax.set_ylabel(ylabel = 'Predicted pIC50', fontsize='large', fontweight='bold')
+    ax.set_xlim(min(Y_test), max(Y_test))
+    ax.set_ylim(min(predictions), max(predictions))
+    ax.figure.set_size_inches(10, 10)
+    ax.get_figure().savefig('predicted_experimental_pIC50.pdf')
 
 if __name__ == '__main__':
+    print("\n\n\n","-"*75)
+    print(" _     _       _        __                            _   _          ")
+    print("| |__ (_) ___ (_)_ __  / _| ___  _ __ _ __ ___   __ _| |_(_) ___ ___ ")
+    print("| '_ \| |/ _ \| | '_ \| |_ / _ \| '__| '_ ` _ \ / _` | __| |/ __/ __|")
+    print("| |_) | | (_) | | | | |  _| (_) | |  | | | | | | (_| | |_| | (__\__ \ ")
+    print("|_.__/|_|\___/|_|_| |_|_|  \___/|_|  |_| |_| |_|\__,_|\__|_|\___|___/")
+
+    print("                 _           _")
+    print(" _ __  _ __ ___ (_) ___  ___| |_")
+    print("| '_ \| '__/ _ \| |/ _ \/ __| __|")
+    print("| |_) | | | (_) | |  __/ (__| |_")
+    print("| .__/|_|  \___// |\___|\___|\__|")
+    print("|_|           |__/    ")
+    print("-" * 75,"\n\n\n")
     retrievedata()
     predict_from_pIC50()
 
