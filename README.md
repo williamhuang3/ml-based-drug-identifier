@@ -17,7 +17,7 @@ to the actual IC50.
 
 This predicted IC50 value can be useful in that we can attempt to
 gauge a compound's bioactivity towards a certain inhibitor without
-having to actually experimentally determine the IC50, saving costs and
+having to actually experimentally determine the IC50, saving R&D costs and
 increasing the accessibility of IC50 data.
 
 Creators: William Huang
