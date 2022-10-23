@@ -1,7 +1,6 @@
 <h1>Bioinformatics AI Drug Discovery Project</h1>
 <h3>Dependencies: ChemBL and rdkit: (conda install -c rdkit rdkit -y)</h3>
-<h3>Bash: conda install -c conda-forge bash</h3>
-<h3>Run Bash from Git Desktop</h3>
+<h3>Bash: conda install -c conda-forge bash or, alternatively, run Bash from Git Desktop</h3>
   <p>This program uses the ChemBL Database to find a chemical/biological target, 
   (in this example, Histone Deacetylase 1) and then uses the Lipinski Rule of 5 
   to evaluate the compounds that interact with the target to locate viable drug/
