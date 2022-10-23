@@ -9,9 +9,11 @@
   of the Lipinski Molecular Descriptors, which evaluate a compound's
   overall bioactivity. We will be calculating how well the interacting
   compounds score on the Lipinski Molecular Descriptors, comparing an
-  active group (IC50 >= 10000) and an inactive group (IC50 <= 1000).<p> -</p> 
-  <p>All of these will be plotted used Matplotlib/Seaborn and saved as pdfs in the
-  directory.</p><p>-</p>
+  active group (IC50 >= 10000) and an inactive group (IC50 <= 1000).
+  <p> -</p> 
+  <p>All of these will be plotted used Matplotlib/Seaborn and saved as pngs in the
+  directory.</p>
+  <p>-</p>
 
 
   We will then use another collection of descriptors, the PaDEL
