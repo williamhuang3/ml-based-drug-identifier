@@ -1,7 +1,10 @@
 #William Huang
 #Bioinformatics Data Project
-#Dependencies: ChemBL and rdkit (conda install -c rdkit rdkit -y)
+#Dependencies: ChemBL and rdkit: (conda install -c rdkit rdkit -y)
 # Bash: conda install -c conda-forge bash
+#or Run Bash from Git Desktop
+# TextWrap3: pip install textwrap3
+from textwrap3 import wrap
 import pandas as pd
 import numpy as np
 from chembl_webresource_client.new_client import new_client
@@ -21,37 +24,49 @@ import matplotlib.pyplot as plt
 
 #this function retrieves data (compounds and their molecular info) for a specific target (e.g coronavirus)
 def retrievedata():
+    print("\n\n", "-" * 75)
+    search_query = input("What target would you like to search for?     ")
+    #CHEMBL325
+    #search_query = "Coronavirus"
+    print("-" * 75,"\n\n")
     target = new_client.target
-    target_query = target.search('CHEMBL325')
+    target_query = target.search(search_query)
     targets = pd.DataFrame.from_dict(target_query)
     selected_target = targets.target_chembl_id[0]
-    print(selected_target)
+    print("-" * 75)
+    print("The target selected is: ", selected_target)
+    print("-" * 75,"\n\n")
     activity = new_client.activity
     res = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50")
-    print(len(res))
+    print("Loading Compounds Into Data Frame...\n")
     df = pd.DataFrame.from_dict(res)
     if df.empty or len(df) < 25:
+        print("-" * 75)
         print("This data frame has little to no IC50 values.")
+        print("-" * 75, "\n\n")
         return
     preprocess(df)
 
-#this function preprocesses the data by subsetting to a
+#this function preprocesses the data by subsetting to a more compatible dataset
 def preprocess(df):
+    print("Subsetting Data Frame of IC50 Values...\n")
     #subset for non NAs
     subset = df[df.standard_value.notna()]
-    print(len(subset))
     #subset for non 0 IC50
     subset = subset.loc[subset.standard_value != '0.0']
-    print(len(subset))
     #subset for those with canonical smiles data
-    subset = subset[df.canonical_smiles.notna()]
+    selection = df.canonical_smiles.notna()
+    subset = subset.loc[selection]
     #drop duplicates
     subset = subset.drop_duplicates(['canonical_smiles'])
 
     #we only want the chem ID, canonical smiles info, and the IC50
     selection = ['molecule_chembl_id', 'canonical_smiles', 'standard_value']
     subset = subset[selection]
-
+    if subset.empty:
+        print("-" * 75)
+        print("This data frame has little to no IC50 values.")
+        print("-" * 75, "\n\n")
     #now we label compounds based on their activity
     labelcompounds(subset)
 
@@ -59,6 +74,7 @@ def preprocess(df):
 #This function labels compounds based on their IC50: inactive, active, or intermediate and "cleans"
 #canonical smiles data for the longest segment in between '.'s
 def labelcompounds(df):
+    print("Labeling Compounds...\n")
     bioactivity_threshold = []
     for i in df.standard_value:
         if float(i) >= 10000:
@@ -110,6 +126,9 @@ def evaluate_drug(df, df_cleaned_smiles):
 
     #testing_df subsets for active and inactive values
     testing_df = df_final[df_final['class'] != 'intermediate']
+    print("\n\n", "-"*75)
+    print("Mann-Whitney Test Results For Each Lipinski Descriptor:")
+    print("-" * 75, "\n\n")
     lipinskiplot = lp(testing_df)
     lipinskiplot.bar_graph(testing_df)
     lipinskiplot.scatter_plot(testing_df)
@@ -124,6 +143,8 @@ def evaluate_drug(df, df_cleaned_smiles):
     lipinskiplot.num_hacceptors(testing_df)
     print(mannwhitney(df, testing_df, 'NumHAcceptors'))
 
+    predict_from_pIC50()
+
 # changes IC50 to pIC50
 def to_pIC50(input):
     pIC50 = []
@@ -133,7 +154,7 @@ def to_pIC50(input):
         pIC50.append(-np.log10(molar))
 
     input['pIC50'] = pIC50
-    x = input.drop('standard_value_norm', 1)
+    x = input.drop('standard_value_norm', axis = 1)
 
     return x
 
@@ -148,7 +169,7 @@ def norm_values(input):
         norm.append(i)
 
     input['standard_value_norm'] = norm
-    x = input.drop('standard_value', 1)
+    x = input.drop('standard_value', axis = 1)
 
     return x
 
@@ -228,13 +249,13 @@ def predict_from_pIC50():
     selection = ['canonical_smiles', 'molecule_chembl_id']
     df_selection = df[selection]
     df_selection.to_csv('molecule.smi', sep='\t', index=False, header=False)
-    print("\n\n\n", "-" * 75)
+    print("\n\n", "-" * 75)
     print("Now, you need to run \" bash padel.sh\" in Git for Windows or another shell/command prompt that supports bash.")
     print("This is necessary to retrieve the PaDEL descriptors for the Random Forest regression!")
-    print("-" * 75,"\n\n\n")
+    print("-" * 75,"\n\n")
     valid_ans = False
     while(not valid_ans):
-        ans = input("\n\n\nDid you run \" bash padel.sh\" yet? (Y/N):    ")
+        ans = input("\n\nDid you run \" bash padel.sh\" yet? (Y/N):    ")
         if(ans.upper() == "Y"):
             valid_ans = True
         elif(ans.upper() == "N"):
@@ -250,6 +271,7 @@ def predict_from_pIC50():
     X = selection.fit_transform(X)
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
     model = RandomForestRegressor(n_estimators=100)
+    print("\nRunning Random Forest Regression...\n")
     model.fit(X_train, Y_train)
     r2 = model.score(X_test, Y_test)
     predictions = model.predict(X_test)
@@ -264,9 +286,12 @@ def predict_from_pIC50():
     ax.set_ylim(min(predictions), max(predictions))
     ax.figure.set_size_inches(10, 10)
     ax.get_figure().savefig('predicted_experimental_pIC50.pdf')
+    print("-"*75)
+    print("Regression Plot Saved As 'predicted_experimental_pIC50.pdf' ")
+    print("-" * 75, "\n\n")
 
 if __name__ == '__main__':
-    print("\n\n\n","-"*75)
+    print("\n\n","-"*75)
     print(" _     _       _        __                            _   _          ")
     print("| |__ (_) ___ (_)_ __  / _| ___  _ __ _ __ ___   __ _| |_(_) ___ ___ ")
     print("| '_ \| |/ _ \| | '_ \| |_ / _ \| '__| '_ ` _ \ / _` | __| |/ __/ __|")
@@ -279,8 +304,28 @@ if __name__ == '__main__':
     print("| |_) | | | (_) | |  __/ (__| |_")
     print("| .__/|_|  \___// |\___|\___|\__|")
     print("|_|           |__/    ")
-    print("-" * 75,"\n\n\n")
+    print("-" * 75,"\n\n")
+    print("-" * 75)
+    x = wrap("This program is designed to query the ChemBL Target Database for a specific target, " +
+             "and then retrieve data on compounds that show activity with that target, evaluated by a metric called the 'IC50'." +
+             " The IC50 essentially quantifies the concentration of a drug necessary to inhibit a biological process by half, thus " +
+             "making it a good marker for drug efficacy, along with other variables that altogether are part of the Lipinski Molecular " +
+             "Descriptors, which evaluate a compound's overall bioactivity. We will be calculating how well the interacting compounds score" +
+             " on the Lipinski Molecular Descriptors, comparing an active group (IC50 >= 10000) and an inactive group (IC50 <= 1000). ", 70)
+    for line in x:
+        print(line)
+    print("\n")
+    x = wrap("We will then use another collection of descriptors, the PaDEL Descriptors, to describe the data and then try to 'predict' an IC50 value for each compound " +
+             "using Random Forest Regression, and compare it to the actual IC50.", 70)
+    for line in x:
+        print(line)
+    print("\n")
+    x = wrap("This predicted IC50 value can be useful in that we can attempt to gauge a compound's bioactivity towards a certain inhibitor" +
+             " without having to actually experimentally determine the IC50, saving costs and increasing the accessibility of IC50 data.", 70)
+    for line in x:
+        print(line)
+    print("\nCreators: William Huang")
+    print("Inspired by Data Professor on YT and machinelearningmastery.com")
+    print("-" * 75, "\n\n")
     retrievedata()
-    predict_from_pIC50()
-
 

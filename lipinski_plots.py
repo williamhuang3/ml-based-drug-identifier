@@ -1,11 +1,6 @@
 #William Huang
 #Bioinformatics Data Project
 #Dependencies: ChemBL and rdkit (conda install -c rdkit rdkit -y)
-import pandas as pd
-import numpy as np
-from chembl_webresource_client.new_client import new_client
-from rdkit import Chem
-from rdkit.Chem import Descriptors, Lipinski
 import seaborn as sns
 sns.set(style='ticks')
 import matplotlib.pyplot as plt
