@@ -37,18 +37,17 @@
  <h3>Libraries: Numpy, Pandas, Matplotlib, Seaborn, SciPy, SKlearn, TextWrap3</h3>
  <h3>Inspired by Data Professor on YT and machinelearningmastery.com</h3>
  <h3>Creators: William Huang</h3>
-  <p>![Example Screen](https://user-images.githubusercontent.com/103707873/197421966-6689269c-7b82-42f7-82a4-1e3d4c0352ba.png)</p>
-  <p>![Example Screen: Mann-Whitney Results](https://user-images.githubusercontent.com/103707873/197422170-1e2cf4ea-1af5-481f-9e99-bd78b9d9edf1.png)</p>
-  <p>![Example Screen: Bash padel.sh Script](https://user-images.githubusercontent.com/103707873/197422191-f994c0da-c07c-4c5c-8a5b-0b532690ec77.png)</p>
-  <p>![Example Screen: Random Forest Regression Compiling](https://user-images.githubusercontent.com/103707873/197422393-21b52960-14ca-406a-9aee-569ec061daf3.png)</p>
-  <p>![plot_bioactivity_class.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847737/plot_bioactivity_class.pdf)</p>
-  <p>![plot_ic50.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847741/plot_ic50.pdf)</p>
-  <p>![plot_LogP.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847743/plot_LogP.pdf)</p>
-  <p>![plot_MW.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847744/plot_MW.pdf)</p>
-  <p>![plot_MW_vs_LogP.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847745/plot_MW_vs_LogP.pdf)</p>
-  <p>![plot_NumHAcceptors.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847750/plot_NumHAcceptors.pdf)</p>
-  <p>![plot_NumHDonors.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847751/plot_NumHDonors.pdf)</p>
-  <p>![predicted_experimental_pIC50.pdf](https://github.com/williamhuang3/bioinformatics-drug-project/files/9847752/predicted_experimental_pIC50.pdf)</p>
+ 
+  ![Example Screen](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/Screenshot%20(24).png)4
+  ![Example Screen: Mann-Whitney Results](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/Screenshot%20(26).png)
+  ![LogP](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_LogP.png)
+  ![plot_MW.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_MW.png)
+  ![plot_MW_vs_LogP.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_MW_vs_LogP.png)
+  ![plot_NumHAcceptors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_NumHAcceptors.png)
+  ![plot_NumHDonors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_NumHDonors.png)
+  ![plot_bioactivity_class.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_bioactivity_class.png)
+  ![plot_ic50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_ic50.png)
+  ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/predicted_experimental_pIC50.png)
 
 
 
