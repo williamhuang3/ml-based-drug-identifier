@@ -38,16 +38,16 @@
  <h3>Inspired by Data Professor on YT and machinelearningmastery.com</h3>
  <h3>Creators: William Huang</h3>
  
-  ![Example Screen](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/Screenshot%20(24).png)4
-  ![Example Screen: Mann-Whitney Results](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/Screenshot%20(26).png)
-  ![LogP](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_LogP.png)
-  ![plot_MW.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_MW.png)
-  ![plot_MW_vs_LogP.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_MW_vs_LogP.png)
-  ![plot_NumHAcceptors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_NumHAcceptors.png)
-  ![plot_NumHDonors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_NumHDonors.png)
-  ![plot_bioactivity_class.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_bioactivity_class.png)
-  ![plot_ic50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/plot_ic50.png)
-  ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/predicted_experimental_pIC50.png)
+  ![Example Screen](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/Screenshot%20(24).png)
+  ![Example Screen: Mann-Whitney Results](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/Screenshot%20(26).png)
+  ![LogP](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_LogP.png)
+  ![plot_MW.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_MW.png)
+  ![plot_MW_vs_LogP.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_MW_vs_LogP.png)
+  ![plot_NumHAcceptors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_NumHAcceptors.png)
+  ![plot_NumHDonors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_NumHDonors.png)
+  ![plot_bioactivity_class.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_bioactivity_class.png)
+  ![plot_ic50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_ic50.png)
+  ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/predicted_experimental_pIC50.png)
 
 
 
