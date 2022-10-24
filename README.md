@@ -128,7 +128,7 @@ pip install matplotlib seaborn pandas numpy scikit-learn scipy
   
 <h2>Example Input(s)</h2>
 
-  Data to try: CHEMBL325 (Histone deacetylase 1), CHEMBL2094109 (Muscarinic acetylcholine receptor), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase)
+  Data to try: CHEMBL325 (Histone deacetylase 1), CHEMBL220 (Homo Sapiens - Acetylcholinesterase), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase)
   
   
   In this example, I used CHEMBL325:
