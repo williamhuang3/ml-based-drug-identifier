@@ -1,7 +1,15 @@
 <h1>Bioinformatics AI Drug Discovery Project</h1>
+
+
 Dependencies: ChemBL and rdkit: (conda install -c rdkit rdkit -y)
+
+
 Bash: conda install -c conda-forge bash or, alternatively, run Bash from Git Desktop
+
+
 TextWrap3: pip install textwrap3
+
+
 Other: Matplotlib, Seaborn, Pandas, Numpy, SKLearn, SciPy
 <h2>Table of Contents</h2>
 
@@ -20,6 +28,8 @@ Other: Matplotlib, Seaborn, Pandas, Numpy, SKLearn, SciPy
   
   **[More Info and Credits](https://github.com/williamhuang3/bioinformatics-drug-project/edit/main/README.md#More-Info-And-Credits)**
 <h2>Introduction</h2>
+
+
   This program uses the ChemBL Database to find a chemical/biological target, 
   (in this example, Histone Deacetylase 1) and then uses the Lipinski Rule of 5 
   to evaluate the compounds that interact with the target to locate viable drug/
