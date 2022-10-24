@@ -7,7 +7,7 @@
   (in this example, Histone Deacetylase 1) and then uses the Lipinski Rule of 5 
   to evaluate the compounds that interact with the target to locate viable drug/
   treatment candidates. First, we look at compounds evaluated by a metric called the 'IC50'.
-  The IC50 essentially quantifies the concentration of a drug necessary
+  The IC50 essentially identifies the concentration of a drug necessary
   to inhibit a biological process by half, thus making it a good marker
   for drug efficacy, along with other variables that altogether are part
   of the Lipinski Molecular Descriptors, which evaluate a compound's
