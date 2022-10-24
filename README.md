@@ -36,7 +36,7 @@
   <p>CHEMBL: https://www.ebi.ac.uk/chembl/</p>
   <p>https://levelup.gitconnected.com/random-forest-regression-209c0f354c84?gi=302f1da7802c#:~:text=Random%20Forest%20Regression%20is%20a%20supervised%20learning%20algorithm%20that%20uses,prediction%20than%20a%20single%20model.</p>
   
-  <p>Data to try: CHEMBL325 (Histone acetylase 1), CHEMBL2094109 (Muscarinic acetylcholine receptor), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase) 
+  <p>Data to try: CHEMBL325 (Histone deacetylase 1), CHEMBL2094109 (Muscarinic acetylcholine receptor), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase) 
   </p>  
  <h3>Libraries: Numpy, Pandas, Matplotlib, Seaborn, SciPy, SKlearn, TextWrap3</h3>
  <h3>Inspired by Data Professor on YT and machinelearningmastery.com</h3>
