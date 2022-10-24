@@ -14,19 +14,19 @@ Other: Matplotlib, Seaborn, Pandas, Numpy, SKLearn, SciPy
 <h2>Table of Contents</h2>
 
 
-  **[Introduction](https://github.com/williamhuang3/bioinformatics-drug-project/edit/main/README.md#Introduction)**
+  **[Introduction](https://github.com/williamhuang3/bioinformatics-drug-project/#Introduction)**
   
   
-  **[Plotting](https://github.com/williamhuang3/bioinformatics-drug-project/edit/main/README.md#Plotting)**
+  **[Plotting](https://github.com/williamhuang3/bioinformatics-drug-project/#Plotting)**
   
   
-  **[Regression](https://github.com/williamhuang3/bioinformatics-drug-project/edit/main/README.md#Regression)**
+  **[Regression](https://github.com/williamhuang3/bioinformatics-drug-project/#Regression)**
   
   
-  **[Example Input(s)](https://github.com/williamhuang3/bioinformatics-drug-project/edit/main/README.md#Example-Inputs)**
+  **[Example Input(s)](https://github.com/williamhuang3/bioinformatics-drug-project/#Example-Inputs)**
   
   
-  **[More Info and Credits](https://github.com/williamhuang3/bioinformatics-drug-project/edit/main/README.md#More-Info-And-Credits)**
+  **[More Info and Credits](https://github.com/williamhuang3/bioinformatics-drug-project/#More-Info-And-Credits)**
 <h2>Introduction</h2>
 
 
