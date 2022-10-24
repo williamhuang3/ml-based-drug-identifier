@@ -1,5 +1,7 @@
 matplotlib
 pandas
+numpy
+seaborn
 rdkit
 scipy
 sklearn
