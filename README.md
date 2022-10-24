@@ -1,16 +1,38 @@
 <h1>Bioinformatics AI Drug Discovery Project</h1>
 
 
-Dependencies: ChemBL and rdkit: (conda install -c rdkit rdkit -y)
+Dependencies: 
 
 
-Bash: conda install -c conda-forge bash or, alternatively, run Bash from Git Desktop
+ChemBL and rdkit: 
 
 
-TextWrap3: pip install textwrap3
+```python 
+conda install -c rdkit rdkit -y
+``` 
 
 
-Other: Matplotlib, Seaborn, Pandas, Numpy, SKLearn, SciPy
+Bash:
+
+
+```python 
+conda install -c conda-forge bash
+``` 
+
+or, alternatively, run Bash from Git Desktop.
+
+
+TextWrap3: 
+
+```python 
+pip install textwrap3
+``` 
+
+
+Other: Matplotlib, Seaborn, Pandas, Numpy, Scikit-Learn, SciPy
+```python 
+pip install matplotlib seaborn pandas numpy scikit-learn scipy
+``` 
 <h2>Table of Contents</h2>
 
 
