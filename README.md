@@ -85,12 +85,13 @@ The project includes plotting the evaluated data using Matplotlib and Seaborn to
   
 ## Predictive Modeling
 
-Using PaDEL Descriptors and Random Forest Regression, the project aims to predict the IC50 values of compounds. This step is pivotal in assessing a compound's viability as a drug candidate without extensive laboratory testing, offering a cost-effective and efficient alternative to traditional methods.
+Using PaDEL Descriptors and Random Forest Regression, the project aims to predict the IC50 values of compounds. The model learns to correlate the descriptors (features) with the IC50 values (target) across the training dataset. Random Forest improves prediction accuracy by creating a forest of decision trees where each tree is trained on a random subset of the data and features. This randomness helps in making the model more robust and less prone to overfitting to the training data, which is great for assessing a compound's viability as a drug candidate without extensive laboratory testing, offering a cost-effective and efficient alternative to traditional methods.
+
  ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/predicted_experimental_pIC50.png)
  
 ## Conclusion
 
-This project represents a significant advancement in the field of drug discovery, leveraging bioinformatics and artificial intelligence to streamline the search and evaluation of new drug candidates. By reducing the need for extensive experimental testing, it promises to accelerate the development of effective treatments.
+This project represents a significant tool in the field of drug discovery, leveraging bioinformatics and artificial intelligence to streamline the search and evaluation of new drug candidates. By reducing the need for extensive experimental testing, it shows promise in accelerating and cutting costs in the development of effective treatments for a variety of conditions.
 
 ## More Info And Credits
  [IC50 Definition](https://en.wikipedia.org/wiki/IC50)
