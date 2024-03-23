@@ -1,84 +1,59 @@
-<h1>Bioinformatics AI Drug Discovery Project</h1>
+# ML-Based Drug Identifier
 
+## Overview
 
-Dependencies: 
+This project aims to streamline the early phases of drug discovery using AI and bioinformatics, focusing on identifying and evaluating potential drug candidates. By harnessing the ChemBL Database, it searches for compounds that interact with specific chemical or biological targets—using Histone Deacetylase 1 as the primary example. The project assesses these compounds based on the Lipinski Rule of 5 and other molecular descriptors, classifying them into active or inactive groups based on their IC50 values. The IC50 metric is crucial as it measures the concentration required to inhibit a biological process by half, offering insight into a compound's drug efficacy.
 
+Furthermore, the project employs the PaDEL Descriptors for a more in-depth analysis, aiming to predict the IC50 values of compounds using Random Forest Regression. This approach not only facilitates the identification of promising drug candidates but also significantly reduces research and development costs by circumventing the need for extensive experimental testing.
 
-ChemBL and rdkit: 
+## Dependencies
 
+To run this project, the following dependencies are required:
 
-```python 
-conda install -c rdkit rdkit -y
-``` 
+- **ChemBL and RDKit**:
+  ```python
+  conda install -c rdkit rdkit -y
+  ```
+- **Bash** (either through Conda or Git Desktop):
+  ```python
+  conda install -c conda-forge bash
+  ```
+- **TextWrap3**:
+  ```python
+  pip install textwrap3
+  ```
+- **Other Essential Libraries** (Matplotlib, Seaborn, Pandas, Numpy, Scikit-Learn, SciPy):
+  ```python
+  pip install matplotlib seaborn pandas numpy scikit-learn scipy
+  ```
 
+## Content
 
-Bash:
+- [Introduction](https://github.com/williamhuang3/bioinformatics-drug-project/#Overview)
+  - Overview of the project, its objectives, and the methodology used.
+- [Getting Started and Example Inputs](https://github.com/williamhuang3/bioinformatics-drug-project/#Getting-Started)
+  - Getting started and showing suggested data for trial runs, including CHEMBL325, CHEMBL220, and CHEMBL3927, with CHEMBL325 as the primary example.
+- [Plotting](https://github.com/williamhuang3/bioinformatics-drug-project/#Results-and-Visualization)
+  - Details on how data for the Lipinski Descriptors are plotted, including examples.
+- [Regression](https://github.com/williamhuang3/bioinformatics-drug-project/#Predictive-Modeling)
+  - Explanation of how Random Forest Regression is utilized to predict IC50 values.
+- [More Info and Credits](https://github.com/williamhuang3/bioinformatics-drug-project/#More-Info-And-Credits)
+  - Additional resources and acknowledgments.
 
+## Getting Started
 
-```python 
-conda install -c conda-forge bash
-``` 
+To initiate drug discovery, follow the installation steps to set up the environment and install necessary dependencies. Next, select a target from the suggested list or choose one of interest to you. The process involves extracting data on compounds interacting with the target, analyzing their properties according to the Lipinski Rule of 5, and employing statistical and machine learning models to evaluate their potential as drug candidates.
 
-or, alternatively, run Bash from Git Desktop.
+Data to try: CHEMBL325 (Histone deacetylase 1), CHEMBL220 (Homo Sapiens - Acetylcholinesterase), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase)
 
-
-TextWrap3: 
-
-```python 
-pip install textwrap3
-``` 
-
-
-Other: Matplotlib, Seaborn, Pandas, Numpy, Scikit-Learn, SciPy
-```python 
-pip install matplotlib seaborn pandas numpy scikit-learn scipy
-``` 
-<h2>Table of Contents</h2>
-
-
-  **[Introduction](https://github.com/williamhuang3/bioinformatics-drug-project/#Introduction)**
+In this example, I used CHEMBL325:
   
   
-  **[Plotting](https://github.com/williamhuang3/bioinformatics-drug-project/#Plotting)**
-  
-  
-  **[Regression](https://github.com/williamhuang3/bioinformatics-drug-project/#Regression)**
-  
-  
-  **[Example Input(s)](https://github.com/williamhuang3/bioinformatics-drug-project/#Example-Inputs)**
-  
-  
-  **[More Info and Credits](https://github.com/williamhuang3/bioinformatics-drug-project/#More-Info-And-Credits)**
-<h2>Introduction</h2>
+  ![Example Screen](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/Screenshot%20(24).png)
 
+## Results and Visualization
 
-  This program uses the ChemBL Database to find a chemical/biological target, 
-  (in this example, Histone Deacetylase 1) and then uses the Lipinski Rule of 5 
-  to evaluate the compounds that interact with the target to locate viable drug/
-  treatment candidates. First, we look at compounds evaluated by a metric called the 'IC50'.
-  The IC50 essentially identifies the concentration of a drug necessary
-  to inhibit a biological process by half, thus making it a good marker
-  for drug efficacy, along with other variables that altogether are part
-  of the Lipinski Molecular Descriptors, which evaluate a compound's
-  overall bioactivity. We will be calculating how well the interacting
-  compounds score on the Lipinski Molecular Descriptors, comparing an
-  active group (IC50 >= 10000) and an inactive group (IC50 <= 1000).
-  
-  
-  We will then use another collection of descriptors, the PaDEL
-  Descriptors, to 'predict' an IC50 value for each compound using Random Forest Regression, and compare it
-  to the actual IC50, which has many applications. For instance, useful in that we can attempt to
-  gauge a compound's bioactivity towards a certain inhibitor without
-  having to actually experimentally determine the IC50, saving R&D costs and
-  increasing the accessibility of IC50 data.
-  
-  
-<h2>Plotting</h2>     
-
-
-  All evaluated data for the Lipinski Descriptors will be plotted used Matplotlib/Seaborn and saved as pngs in the
-  directory.
-  
+The project includes plotting the evaluated data using Matplotlib and Seaborn to visualize the distribution and comparison between active and inactive compounds across different molecular descriptors. These plots are crucial for understanding the characteristics that contribute to a compound's effectiveness and bioactivity.
   <h4>Molecular Weight: Active vs. Inactive</h4>
   
   
@@ -107,40 +82,17 @@ pip install matplotlib seaborn pandas numpy scikit-learn scipy
   
   
   ![plot_bioactivity_class.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_bioactivity_class.png)
+  
+## Predictive Modeling
 
+Using PaDEL Descriptors and Random Forest Regression, the project aims to predict the IC50 values of compounds. This step is pivotal in assessing a compound's viability as a drug candidate without extensive laboratory testing, offering a cost-effective and efficient alternative to traditional methods.
+ ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/predicted_experimental_pIC50.png)
+ 
+## Conclusion
 
-<h2>Regression</h2>
+This project represents a significant advancement in the field of drug discovery, leveraging bioinformatics and artificial intelligence to streamline the search and evaluation of new drug candidates. By reducing the need for extensive experimental testing, it promises to accelerate the development of effective treatments.
 
-
-  We will then use another collection of descriptors, the PaDEL
-  Descriptors, with `bash padel.sh` to describe the data and then try to 'predict' an IC50
-  value for each compound using Random Forest Regression, and compare it
-  to the actual IC50.
-
-  ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/predicted_experimental_pIC50.png)
-    
-  This predicted IC50 value can be useful in that we can attempt to
-  gauge a compound's bioactivity towards a certain inhibitor without
-  having to actually experimentally determine the IC50, saving R&D costs and
-  increasing the accessibility of IC50 data.
-  
-  
-  
-<h2>Example Input(s)</h2>
-
-  Data to try: CHEMBL325 (Histone deacetylase 1), CHEMBL220 (Homo Sapiens - Acetylcholinesterase), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase)
-  
-  
-  In this example, I used CHEMBL325:
-  
-  
-  ![Example Screen](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/Screenshot%20(24).png)
-  ![Example Screen: Mann-Whitney Results](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/Screenshot%20(26).png)  
-  
-  
-  
-<h2>More Info and Credits</h2>
-
+## More Info And Credits
  [IC50 Definition](https://en.wikipedia.org/wiki/IC50)
   
   
@@ -152,17 +104,5 @@ pip install matplotlib seaborn pandas numpy scikit-learn scipy
   
  [Random Forest Regression](https://levelup.gitconnected.com/random-forest-regression-209c0f354c84?gi=302f1da7802c#:~:text=Random%20Forest%20Regression%20is%20a%20supervised%20learning%20algorithm%20that%20uses,prediction%20than%20a%20single%20model.)
 
-
- Libraries: Numpy, Pandas, Matplotlib, Seaborn, SciPy, SKlearn, TextWrap3
- 
- 
- Inspired by Data Professor on YT and machinelearningmastery.com
- 
- 
- Creators: William Huang
- 
- 
-
-
-
-
+This project was inspired by resources and tutorials from Data Professor on YouTube and machinelearningmastery.com
+Written by William Huang
