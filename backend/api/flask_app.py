@@ -269,6 +269,15 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
             "hacceptors": int(row['NumHAcceptors'])
         })
     
+    # Convert relative plot URLs to absolute URLs
+    base_url = os.getenv('BASE_URL', 'https://ml-based-drug-identifier.onrender.com')
+    absolute_plots = []
+    for plot in plot_results:
+        plot_copy = plot.copy()
+        if plot_copy.get('imagePath', '').startswith('/outputs/'):
+            plot_copy['imagePath'] = base_url + plot_copy['imagePath']
+        absolute_plots.append(plot_copy)
+    
     return {
         "success": True,
         "targetName": target_name,
@@ -280,7 +289,7 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
         "intermediateCompounds": class_counts.get('intermediate', 0),
         "compounds": compounds,
         "statistics": stats_results,
-        "plots": plot_results,
+        "plots": absolute_plots,
         "predictions": ml_results,
         "timestamp": datetime.now().isoformat()
     }
