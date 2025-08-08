@@ -1,3 +1,5 @@
+import { Download, Database } from 'lucide-react'
+
 interface Compound {
   id: string
   smiles: string
@@ -15,6 +17,31 @@ interface CompoundTableProps {
 }
 
 export default function CompoundTable({ compounds }: CompoundTableProps) {
+  const downloadCSV = () => {
+    const headers = ['ChemBL ID', 'Classification', 'IC50 (nM)', 'pIC50', 'MW (g/mol)', 'LogP', 'H Donors', 'H Acceptors', 'SMILES']
+    const csvContent = [
+      headers.join(','),
+      ...compounds.map(compound => [
+        compound.id,
+        compound.classification,
+        compound.ic50?.toFixed(2) || 'N/A',
+        compound.pic50?.toFixed(2) || 'N/A',
+        compound.mw?.toFixed(2) || 'N/A',
+        compound.logp?.toFixed(2) || 'N/A',
+        compound.hdonors || 'N/A',
+        compound.hacceptors || 'N/A',
+        `"${compound.smiles || 'N/A'}"`
+      ].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `compounds-data-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
   if (!compounds || compounds.length === 0) {
     return (
       <div className="text-center py-8">
@@ -33,7 +60,29 @@ export default function CompoundTable({ compounds }: CompoundTableProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-2xl font-semibold text-gray-900">Compound Analysis</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-2xl font-semibold text-gray-900">Compound Analysis</h3>
+        <button
+          onClick={downloadCSV}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          Export CSV
+        </button>
+      </div>
+      
+      <div className="bg-blue-50 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <Database className="w-5 h-5 text-blue-600 mt-0.5" />
+          <div>
+            <h4 className="font-medium text-blue-900 mb-1">Dataset Summary</h4>
+            <p className="text-sm text-blue-700">
+              Showing {compounds.length} compounds with bioactivity data and molecular descriptors.
+              Export to CSV for further analysis in your preferred data science tools.
+            </p>
+          </div>
+        </div>
+      </div>
       
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">

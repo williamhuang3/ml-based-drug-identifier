@@ -1,0 +1,12 @@
+version: 2
+services:
+  backend:
+    source: .
+    build:
+      commands:
+        - pip install -r requirements.txt
+    start:
+      command: python flask_app.py
+    variables:
+      FLASK_ENV: production
+      ALLOWED_ORIGINS: https://your-frontend.vercel.app

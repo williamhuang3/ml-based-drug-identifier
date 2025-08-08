@@ -2,42 +2,7 @@
 
 A full-stack bioinformatics application that combines Python-based molecular analysis with a modern React/Next.js web interface for AI-powered drug discovery and compound evaluation.
 
-## 🔬 Features
-
-### Backend (Python)
-- **ChemBL Database Integration**: Query biological targets and retrieve compound activity data
-- **Molecular Descriptors**: Calculate Lipinski descriptors (MW, LogP, H-donors, H-acceptors)
-- **Bioactivity Classification**: Classify compounds as active/inactive/intermediate based on IC50 values  
-- **Statistical Analysis**: Mann-Whitney U tests comparing active vs inactive compounds
-- **Machine Learning**: Random Forest regression for IC50 prediction using PaDEL descriptors
-- **Data Visualization**: Generate publication-ready plots with matplotlib/seaborn
-
-### Frontend (React/Next.js)
-- **Interactive Web Interface**: Modern, responsive UI built with React and Tailwind CSS
-- **Real-time Analysis**: Submit queries and view results through an intuitive dashboard
-- **Data Visualization**: Interactive charts and plots displaying molecular analysis results
-- **Tabbed Results View**: Organized display of compounds, statistics, plots, and ML predictions
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-
-## 🛠 Technology Stack
-
-### Backend
-- **Python 3.8+** with scientific computing libraries
-- **Flask** for REST API backend
-- **ChemBL Web Resource Client** for database queries
-- **RDKit** for molecular descriptor calculations
-- **scikit-learn** for machine learning
-- **matplotlib/seaborn** for data visualization
-- **pandas/numpy** for data processing
-
-### Frontend  
-- **Next.js 14** with App Router
-- **React 18** with TypeScript
-- **Tailwind CSS 3.4.1** for styling
-- **Recharts** for interactive data visualization
-- **Lucide React** for modern icons
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - **Node.js 18+** and npm
@@ -81,34 +46,7 @@ npm run dev          # Terminal 2: Next.js frontend
 5. **Open your browser**
 Navigate to [http://localhost:3000](http://localhost:3000) (frontend) or [http://localhost:5001](http://localhost:5001) (API)
 
-## 📁 Project Structure
-
-```
-DrugPredict/
-├── src/                    # Next.js source code
-│   ├── app/               # App router pages and API routes
-│   │   ├── api/          # Backend API integration
-│   │   ├── globals.css   # Global styles
-│   │   ├── layout.tsx    # Root layout
-│   │   └── page.tsx      # Home page
-│   └── components/        # React components
-│       ├── Header.tsx
-│       ├── SearchForm.tsx
-│       ├── ResultsDisplay.tsx
-│       └── ...
-├── public/                # Static assets for Next.js
-│   └── assets/           # Symlink to /assets for web serving
-├── assets/               # Generated plots and analysis outputs
-├── main.py              # Core Python analysis pipeline (Flask-ready)
-├── flask_app.py         # Flask REST API backend  
-├── lipinski_plots.py    # Plotting utilities
-├── padel.sh            # PaDEL descriptor script
-├── requirements.txt    # Python dependencies
-├── package.json       # Node.js dependencies
-└── README.md
-```
-
-## 🧪 Usage
+## Usage
 
 ### Web Interface
 
@@ -164,31 +102,6 @@ Follow the prompts to:
   - RMSE (Root Mean Square Error)
   - MAE (Mean Absolute Error)
 
-## 🚀 Deployment
-
-### Development
-```bash
-npm run dev-full     # Start both Flask backend and Next.js frontend
-npm run flask-dev    # Start Flask backend only
-npm run dev          # Start Next.js frontend only
-npm run build        # Build for production
-npm run start        # Start production server
-```
-
-### Production
-- Deploy to **Vercel** (recommended for Next.js)
-- Deploy to **Heroku**, **AWS**, or any Node.js hosting platform
-- Ensure Python environment is available for backend processing
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Commit changes: `git commit -am 'Add new feature'`
-5. Push to branch: `git push origin feature-name`
-6. Submit a pull request
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -198,15 +111,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **William Huang** - Project Creator
 - **Data Professor** (YouTube) - Inspiration and tutorials
 - **ChemBL Database** - Compound and bioactivity data
-- **RDKit** - Molecular informatics toolkit
-- **Next.js Team** - React framework
-
-## 📞 Support
-
-For questions, issues, or contributions:
-- Open an issue on [GitHub](https://github.com/williamhuang3/ml-based-drug-identifier/issues)
-- Contact: [your-email@example.com]
 
 ---
-
-*DrugPredict - Built with ❤️ for the bioinformatics and drug discovery community*

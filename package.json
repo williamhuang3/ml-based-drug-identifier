@@ -7,19 +7,22 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup-python": "pip install -r requirements.txt",
-    "flask-dev": "/Users/WilliamHuang/Documents/GitHub/ml-based-drug-identifier/.venv/bin/python flask_app.py",
+    "setup-python": "pip install -r backend/requirements.txt",
+    "flask-dev": "cd /Users/WilliamHuang/Documents/GitHub/ml-based-drug-identifier && /Users/WilliamHuang/Documents/GitHub/ml-based-drug-identifier/.venv/bin/python backend/api/flask_app.py",
     "dev-full": "concurrently \"npm run flask-dev\" \"npm run dev\"",
-    "analyze": "python main.py"
+    "analyze": "python backend/analysis/main.py",
+    "setup": "./scripts/setup.sh"
   },
   "dependencies": {
+    "jspdf": "^3.0.1",
     "lucide-react": "^0.537.0",
-    "next": "14.2.5",
+    "next": "^14.2.31",
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^3.1.2"
   },
   "devDependencies": {
+    "@types/jspdf": "^1.3.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

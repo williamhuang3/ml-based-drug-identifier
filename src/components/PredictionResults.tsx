@@ -132,7 +132,7 @@ export default function PredictionResults({ predictions }: PredictionResultsProp
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Predicted vs Experimental pIC50</h4>
         <div className="aspect-square bg-gray-50 flex items-center justify-center rounded-lg">
           <img
-            src="/assets/predicted_experimental_pIC50.png"
+            src="/outputs/predicted_experimental_pIC50.png"
             alt="Predicted vs Experimental pIC50"
             className="max-w-full max-h-full object-contain"
             onError={(e) => {
@@ -142,7 +142,11 @@ export default function PredictionResults({ predictions }: PredictionResultsProp
             }}
           />
           <div className="hidden flex-col items-center justify-center text-gray-400">
-            <div className="text-4xl mb-2">📈</div>
+            <div className="text-gray-400 mb-2">
+              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
             <p className="text-sm">Regression plot will appear here</p>
             <p className="text-xs text-gray-500 mt-1">Run analysis to generate</p>
           </div>
@@ -198,7 +202,7 @@ export default function PredictionResults({ predictions }: PredictionResultsProp
 
       {/* Model Interpretation */}
       <div className="bg-blue-50 rounded-lg p-4">
-        <h5 className="font-semibold text-blue-900 mb-2">🤖 Model Performance Guide</h5>
+        <h5 className="font-semibold text-blue-900 mb-2">Model Performance Guide</h5>
         <div className="text-sm text-blue-800 space-y-1">
           <p><strong>R² Score:</strong> Proportion of variance explained (closer to 1.0 is better)</p>
           <p><strong>RMSE:</strong> Root Mean Square Error (lower values indicate better fit)</p>

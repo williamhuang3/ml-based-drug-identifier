@@ -12,22 +12,27 @@ import threading
 from queue import Queue
 
 # Import your analysis functions
-from main import (
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from backend.analysis.main import (
     run_complete_analysis_pipeline
 )
 
 app = Flask(__name__)
-
-# Configure CORS for production
-allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
-CORS(app, origins=allowed_origins)  # Enable CORS for Next.js frontend
+CORS(app)  # Enable CORS for Next.js frontend
 
 # Configure logging
+log_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'logs')
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, 'drugpredict.log')
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('drugpredict.log'),
+        logging.FileHandler(log_file),
         logging.StreamHandler()
     ]
 )
@@ -251,6 +256,4 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
     }
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5001))
-    debug = os.getenv('FLASK_ENV') != 'production'
-    app.run(debug=debug, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=5001)

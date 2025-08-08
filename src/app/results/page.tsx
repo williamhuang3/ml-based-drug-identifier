@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ResultsDisplay from '@/components/ResultsDisplay'
 import ProgressBar from '@/components/ProgressBar'
 import { ArrowLeft } from 'lucide-react'
 
-export default function ResultsPage() {
+function ResultsContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const target = searchParams.get('target')
@@ -16,7 +16,6 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [results, setResults] = useState(null)
   const [error, setError] = useState('')
-  const [currentStep, setCurrentStep] = useState('')
   const [taskId, setTaskId] = useState('')
 
   useEffect(() => {
@@ -32,7 +31,6 @@ export default function ResultsPage() {
       setIsLoading(true)
       setError('')
       setResults(null)
-      setCurrentStep('')
 
       try {
         // Start the analysis and get task ID
@@ -51,46 +49,8 @@ export default function ResultsPage() {
         }
 
         const startData = await startResponse.json()
-        const newTaskId = startData.taskId
-        setTaskId(newTaskId)
-
-        // Poll for progress updates
-        const pollProgress = async () => {
-          try {
-            const progressResponse = await fetch(`${apiUrl}/progress/${newTaskId}`, {
-              signal: abortController.signal,
-            })
-
-            if (!progressResponse.ok) {
-              throw new Error('Failed to get progress')
-            }
-
-            const progressData = await progressResponse.json()
-            
-            if (!abortController.signal.aborted) {
-              setCurrentStep(progressData.currentStep)
-              
-              if (progressData.status === 'complete' && progressData.results) {
-                setResults(progressData.results)
-                setIsLoading(false)
-              } else if (progressData.status === 'error') {
-                setError(progressData.message)
-                setIsLoading(false)
-              } else {
-                // Continue polling
-                setTimeout(pollProgress, 1000)
-              }
-            }
-          } catch (err) {
-            if (!abortController.signal.aborted) {
-              setError(err instanceof Error ? err.message : 'Progress check failed')
-              setIsLoading(false)
-            }
-          }
-        }
-
-        // Start polling
-        setTimeout(pollProgress, 1000)
+        setTaskId(startData.taskId)
+        // ProgressBar will handle the polling and completion
 
       } catch (err) {
         if (!abortController.signal.aborted) {
@@ -162,11 +122,40 @@ export default function ResultsPage() {
         )}
 
         {/* Loading state with progress bar */}
-        {isLoading && <ProgressBar isActive={isLoading} currentStep={currentStep} />}
+        {isLoading && (
+          <ProgressBar 
+            isActive={isLoading} 
+            taskId={taskId}
+            onComplete={(results) => {
+              if (results) {
+                setResults(results)
+              }
+              setIsLoading(false)
+            }}
+          />
+        )}
 
         {/* Results */}
         {results && <ResultsDisplay results={results} />}
       </div>
     </div>
+  )
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <Header />
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ResultsContent />
+    </Suspense>
   )
 }

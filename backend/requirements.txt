@@ -1,0 +1,10 @@
+matplotlib
+pandas
+numpy
+seaborn
+rdkit
+scipy
+scikit-learn
+chembl_webresource_client
+flask
+flask-cors

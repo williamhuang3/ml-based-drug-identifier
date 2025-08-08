@@ -13,8 +13,8 @@ interface ProgressStep {
 
 interface ProgressBarProps {
   isActive: boolean
-  currentStep?: string
-  onComplete?: () => void
+  taskId?: string
+  onComplete?: (results?: any) => void
 }
 
 const ANALYSIS_STEPS: ProgressStep[] = [
@@ -76,86 +76,106 @@ const ANALYSIS_STEPS: ProgressStep[] = [
   }
 ]
 
-export default function ProgressBar({ isActive, currentStep, onComplete }: ProgressBarProps) {
+export default function ProgressBar({ isActive, taskId, onComplete }: ProgressBarProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const [elapsedTime, setElapsedTime] = useState(0)
+  const [currentStepData, setCurrentStepData] = useState(ANALYSIS_STEPS[0])
+  const [status, setStatus] = useState('running')
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
-    if (!isActive) {
+    if (!isActive || !taskId) {
       setCurrentStepIndex(0)
       setProgress(0)
       setElapsedTime(0)
+      setStatus('running')
+      setMessage('')
       return
     }
 
     let interval: NodeJS.Timeout
-
-    // Simulate progress through steps
     const startTime = Date.now()
-    
-    interval = setInterval(() => {
-      const elapsed = (Date.now() - startTime) / 1000
-      setElapsedTime(elapsed)
 
-      let totalDuration = 0
-      let currentDuration = 0
-      let stepIndex = 0
-
-      for (let i = 0; i < ANALYSIS_STEPS.length; i++) {
-        const step = ANALYSIS_STEPS[i]
-        if (elapsed >= totalDuration && elapsed < totalDuration + step.duration) {
-          stepIndex = i
-          currentDuration = elapsed - totalDuration
-          break
+    // Poll the backend for real progress
+    const pollProgress = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'
+        const response = await fetch(`${apiUrl}/progress/${taskId}`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
-        totalDuration += step.duration
-        if (i === ANALYSIS_STEPS.length - 1) {
-          // If we're past all steps, stay on the last one
-          stepIndex = i
-          currentDuration = step.duration
+        
+        const data = await response.json()
+        
+        // Update progress from backend
+        setProgress(data.progress || 0)
+        setStatus(data.status || 'running')
+        setMessage(data.message || '')
+        
+        // Find step index based on currentStep from backend
+        if (data.currentStep) {
+          const stepIndex = ANALYSIS_STEPS.findIndex(step => step.id === data.currentStep)
+          if (stepIndex !== -1) {
+            setCurrentStepIndex(stepIndex)
+            setCurrentStepData(ANALYSIS_STEPS[stepIndex])
+          }
         }
+        
+        // Update elapsed time
+        const elapsed = (Date.now() - startTime) / 1000
+        setElapsedTime(elapsed)
+        
+        // Check if complete
+        if (data.status === 'complete') {
+          setProgress(100)
+          if (onComplete) {
+            onComplete(data.results)
+          }
+          return // Stop polling
+        }
+        
+        if (data.status === 'error') {
+          console.error('Analysis failed:', data.message)
+          return // Stop polling
+        }
+        
+      } catch (error) {
+        console.error('Failed to fetch progress:', error)
       }
+    }
 
-      setCurrentStepIndex(stepIndex)
-
-      // Calculate overall progress
-      const totalExpectedDuration = ANALYSIS_STEPS.reduce((sum, step) => sum + step.duration, 0)
-      const overallProgress = Math.min((elapsed / totalExpectedDuration) * 100, 95) // Cap at 95% until actual completion
-      setProgress(overallProgress)
-
-    }, 100) // Update every 100ms for smooth animation
+    // Poll every 1 second
+    interval = setInterval(pollProgress, 1000)
+    
+    // Initial poll
+    pollProgress()
 
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isActive, onComplete])
+  }, [isActive, taskId, onComplete])
 
-  // Handle external step updates (if provided)
-  useEffect(() => {
-    if (currentStep) {
-      const stepIndex = ANALYSIS_STEPS.findIndex(step => step.id === currentStep)
-      if (stepIndex !== -1) {
-        setCurrentStepIndex(stepIndex)
-      }
-    }
-  }, [currentStep])
+  // Remove the old currentStep effect since we handle it in the main effect now
 
   if (!isActive) {
     return null
   }
 
-  const currentStepData = ANALYSIS_STEPS[currentStepIndex]
   const totalSteps = ANALYSIS_STEPS.length
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
-          Analyzing Target Data
+          {status === 'error' ? 'Analysis Failed' : status === 'complete' ? 'Analysis Complete' : 'Analyzing Target Data'}
         </h2>
         <p className="text-gray-600 text-lg">
-          This may take a few minutes depending on the dataset size...
+          {status === 'error' 
+            ? 'There was an error during analysis. Please try again.' 
+            : status === 'complete' 
+              ? 'Analysis completed successfully!' 
+              : 'This may take a few minutes depending on the dataset size...'}
         </p>
       </div>
 
@@ -191,7 +211,7 @@ export default function ProgressBar({ isActive, currentStep, onComplete }: Progr
               {currentStepData.label}
             </h3>
             <p className="text-sm text-gray-600">
-              {currentStepData.description}
+              {message || currentStepData.description}
             </p>
           </div>
           <div className="flex-shrink-0 flex items-center gap-2">

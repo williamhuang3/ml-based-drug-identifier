@@ -50,7 +50,8 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
     try {
       setIsSearching(true)
       console.log('Set isSearching to true')
-      const response = await fetch(`http://localhost:5001/api/targets/search?q=${encodeURIComponent(query)}`)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'
+      const response = await fetch(`${apiUrl}/targets/search?q=${encodeURIComponent(query)}`)
       const data = await response.json()
       
       console.log('API Response:', data)
@@ -198,12 +199,11 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
   }
 
   const popularTargets = [
-    { name: 'EGFR', id: 'CHEMBL203', description: 'Epidermal Growth Factor Receptor', type: 'enzyme', organism: 'Homo sapiens' },
-    { name: 'DPP4', id: 'CHEMBL284', description: 'Dipeptidyl Peptidase 4', type: 'enzyme', organism: 'Homo sapiens' },
-    { name: 'Dopamine D2 receptor', id: 'CHEMBL217', description: 'Neurotransmitter receptor', type: 'receptor', organism: 'Homo sapiens' },
-    { name: 'Acetylcholinesterase', id: 'CHEMBL220', description: 'Cholinergic enzyme', type: 'enzyme', organism: 'Homo sapiens' },
-    { name: 'Serotonin transporter', id: 'CHEMBL228', description: 'Neurotransmitter transporter', type: 'transporter', organism: 'Homo sapiens' },
-    { name: 'Beta-2 adrenergic receptor', id: 'CHEMBL210', description: 'G-protein coupled receptor', type: 'receptor', organism: 'Homo sapiens' }
+    { name: 'Acetylcholinesterase', id: 'CHEMBL220', description: 'Cholinergic enzyme (Alzheimer\'s target)', type: 'enzyme', organism: 'Homo sapiens' },
+    { name: 'Serotonin transporter', id: 'CHEMBL228', description: 'SSRI target (Prozac, antidepressants)', type: 'transporter', organism: 'Homo sapiens' },
+    { name: 'Cannabinoid receptor CB1', id: 'CHEMBL218', description: 'Neuromodulatory GPCR', type: 'receptor', organism: 'Homo sapiens' },
+    { name: 'Histone deacetylase 4', id: 'CHEMBL1868', description: 'Epigenetic regulator', type: 'enzyme', organism: 'Homo sapiens' },
+    { name: 'Beta-secretase 1', id: 'CHEMBL1985', description: 'BACE1 (Alzheimer\'s target)', type: 'enzyme', organism: 'Homo sapiens' },
   ]
 
   return (
@@ -310,11 +310,11 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
               disabled={isLoading}
               className="w-full py-4 px-4 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 bg-white shadow-sm hover:shadow-md focus:shadow-lg appearance-none"
             >
-              <option value="500">⚡ 500 compounds (Fast • ~1-2 minutes)</option>
-              <option value="1000">🎯 1,000 compounds (Recommended • ~2-3 minutes)</option>
-              <option value="2000">📊 2,000 compounds (Comprehensive • ~4-5 minutes)</option>
-              <option value="5000">🔬 5,000 compounds (Extensive • ~8-10 minutes)</option>
-              <option value="all">🌐 All available compounds (Maximum • 10+ minutes)</option>
+              <option value="500">500 compounds (Fast • ~1-2 minutes)</option>
+              <option value="1000">1,000 compounds (Recommended • ~2-3 minutes)</option>
+              <option value="2000">2,000 compounds (Comprehensive • ~4-5 minutes)</option>
+              <option value="5000">5,000 compounds (Extensive • ~8-10 minutes)</option>
+              <option value="all">All available compounds (Maximum • 10+ minutes)</option>
             </select>
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <ChevronDown className="h-5 w-5 text-gray-400" />
@@ -390,12 +390,6 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
               </div>
             </button>
           ))}
-        </div>
-        <div className="mt-4 text-xs text-gray-500 bg-blue-50 p-3 rounded-lg flex items-center gap-2">
-          <Database className="w-4 h-4 text-blue-500 flex-shrink-0" />
-          <span>
-            Popular targets are pre-validated with abundant compound data for faster analysis
-          </span>
         </div>
       </div>
     </div>

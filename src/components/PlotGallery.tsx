@@ -1,3 +1,5 @@
+import { Download } from 'lucide-react'
+
 interface Plot {
   name: string
   description: string
@@ -10,6 +12,12 @@ interface PlotGalleryProps {
 }
 
 export default function PlotGallery({ plots }: PlotGalleryProps) {
+  const downloadImage = (imagePath: string, fileName: string) => {
+    const link = document.createElement('a')
+    link.href = imagePath
+    link.download = `${fileName}.png`
+    link.click()
+  }
   const defaultPlots = [
     {
       name: 'Bioactivity Class Distribution',
@@ -65,11 +73,11 @@ export default function PlotGallery({ plots }: PlotGalleryProps) {
 
   const getPlotIcon = (type: string) => {
     switch (type) {
-      case 'bar': return '📊'
-      case 'scatter': return '🔵'
-      case 'box': return '📦'
-      case 'regression': return '📈'
-      default: return '📉'
+      case 'bar': return 'Bar Chart'
+      case 'scatter': return 'Scatter Plot'
+      case 'box': return 'Box Plot'
+      case 'regression': return 'Regression'
+      default: return 'Chart'
     }
   }
 
@@ -79,8 +87,8 @@ export default function PlotGallery({ plots }: PlotGalleryProps) {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {plotsToShow.map((plot, index) => (
-          <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-            <div className="aspect-square bg-gray-50 flex items-center justify-center">
+          <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
+            <div className="aspect-square bg-gray-50 flex items-center justify-center relative">
               <img
                 src={plot.imagePath}
                 alt={plot.name}
@@ -96,13 +104,31 @@ export default function PlotGallery({ plots }: PlotGalleryProps) {
                 <p className="text-sm">Plot will appear here</p>
                 <p className="text-xs text-gray-500 mt-1">Run analysis to generate</p>
               </div>
+              
+              {/* Download button overlay */}
+              <button
+                onClick={() => downloadImage(plot.imagePath, plot.name.toLowerCase().replace(/ /g, '-'))}
+                className="absolute top-2 right-2 bg-white/90 hover:bg-white border border-gray-200 rounded-lg p-2 opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
+                title="Download plot"
+              >
+                <Download className="w-4 h-4 text-gray-600" />
+              </button>
             </div>
             
             <div className="p-4">
-              <h4 className="font-semibold text-gray-900 mb-2">
-                <span className="mr-2">{getPlotIcon(plot.type)}</span>
-                {plot.name}
-              </h4>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-gray-900">
+                  <span className="mr-2">{getPlotIcon(plot.type)}</span>
+                  {plot.name}
+                </h4>
+                <button
+                  onClick={() => downloadImage(plot.imagePath, plot.name.toLowerCase().replace(/ /g, '-'))}
+                  className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </button>
+              </div>
               <p className="text-sm text-gray-600">{plot.description}</p>
             </div>
           </div>
@@ -110,7 +136,7 @@ export default function PlotGallery({ plots }: PlotGalleryProps) {
       </div>
 
       <div className="bg-yellow-50 rounded-lg p-4">
-        <h5 className="font-semibold text-yellow-900 mb-2">📊 Visualization Guide</h5>
+        <h5 className="font-semibold text-yellow-900 mb-2">Visualization Guide</h5>
         <div className="text-sm text-yellow-800 space-y-1">
           <p><strong>Box Plots:</strong> Show median, quartiles, and outliers for each bioactivity class</p>
           <p><strong>Scatter Plots:</strong> Reveal relationships between molecular descriptors</p>
