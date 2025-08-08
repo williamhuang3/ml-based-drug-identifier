@@ -8,5 +8,5 @@ services:
       - key: FLASK_ENV
         value: production
       - key: ALLOWED_ORIGINS
-        value: https://drug-predict-ml.vercel.app
+        value: https://drug-predict-ml.vercel.app,http://localhost:3000
     autoDeploy: true
