@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, send_file
 from flask_cors import CORS
 import logging
 import pandas as pd
@@ -80,6 +80,33 @@ def health_check():
         "timestamp": datetime.now().isoformat(),
         "service": "DrugPredict API"
     })
+
+@app.route('/outputs/<filename>')
+def serve_output_file(filename):
+    """Serve generated plot files"""
+    try:
+        # Define the outputs directory path - same as where lipinski_plots saves files
+        outputs_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'outputs')
+        file_path = os.path.join(outputs_dir, filename)
+        
+        logger.info(f"Attempting to serve file: {file_path}")
+        logger.info(f"File exists: {os.path.exists(file_path)}")
+        
+        # Check if file exists
+        if os.path.exists(file_path):
+            return send_file(file_path, mimetype='image/png')
+        else:
+            # List files in directory for debugging
+            if os.path.exists(outputs_dir):
+                files = os.listdir(outputs_dir)
+                logger.info(f"Available files in outputs directory: {files}")
+            else:
+                logger.error(f"Outputs directory does not exist: {outputs_dir}")
+            return jsonify({"error": "File not found"}), 404
+            
+    except Exception as e:
+        logger.error(f"Error serving file {filename}: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route('/api/targets/search', methods=['GET'])
 def search_targets():
