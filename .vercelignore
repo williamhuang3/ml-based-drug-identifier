@@ -1,0 +1,15 @@
+# Ignore Python backend files
+render.yaml
+railway.yaml
+flask_app.py
+main.py
+requirements.txt
+*.py
+__pycache__/
+*.pyc
+backend-README.md
+.venv/
+logs/
+data/
+scripts/
+backend/

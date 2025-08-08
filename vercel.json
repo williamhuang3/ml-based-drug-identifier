@@ -6,16 +6,5 @@
   "devCommand": "npm run dev",
   "env": {
     "NEXT_PUBLIC_API_URL": "https://drug-predict-ml-backend.onrender.com/api"
-  },
-  "functions": {
-    "app/api/**": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/health",
-      "destination": "/api/health"
-    }
-  ]
+  }
 }
