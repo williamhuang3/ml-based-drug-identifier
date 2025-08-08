@@ -64,12 +64,15 @@ class ProgressTracker:
         logger.info(f"Progress {self.task_id}: {step} - {progress}% - {message}")
     
     def complete(self, results=None):
+        logger.info(f"ProgressTracker.complete() called for task {self.task_id}")
         self.status = 'complete'
         self.progress = 100
         self.current_step = 'complete'
         self.message = 'Analysis completed successfully'
         if results:
             self.results = results
+            logger.info(f"Results stored in tracker for task {self.task_id}")
+        logger.info(f"Progress tracker status set to complete for task {self.task_id}")
     
     def error(self, error_message):
         self.status = 'error'
@@ -86,7 +89,7 @@ def health_check():
 
 @app.route('/outputs/<filename>')
 def serve_output_file(filename):
-    """Serve generated plot files"""
+    """Serve generated plot files with cache-busting headers"""
     try:
         # Define the outputs directory path - relative to root project directory
         outputs_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'outputs')
@@ -97,7 +100,12 @@ def serve_output_file(filename):
         
         # Check if file exists
         if os.path.exists(file_path):
-            return send_file(file_path, mimetype='image/png')
+            response = send_file(file_path, mimetype='image/png')
+            # Add cache-busting headers to force refresh
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            return response
         else:
             # List files in directory for debugging
             if os.path.exists(outputs_dir):
@@ -162,7 +170,10 @@ def get_progress(task_id):
     """
     tracker = progress_store.get(task_id)
     if not tracker:
+        logger.warning(f"Progress check for unknown task_id: {task_id}")
         return jsonify({"error": "Task not found"}), 404
+    
+    logger.debug(f"Progress check for {task_id}: status={tracker.status}, progress={tracker.progress}, step={tracker.current_step}")
     
     response = {
         "taskId": task_id,
@@ -174,6 +185,7 @@ def get_progress(task_id):
     
     if tracker.status == 'complete' and hasattr(tracker, 'results'):
         response["results"] = tracker.results
+        logger.info(f"Returning complete results for task {task_id}")
     
     return jsonify(response)
 
@@ -201,10 +213,12 @@ def analyze_target():
             try:
                 logger.info(f"Starting analysis for target: {target_name} with limit: {limit}")
                 results = run_complete_analysis(target_name, limit, tracker)
+                logger.info(f"Analysis results received, calling tracker.complete()...")
                 tracker.complete(results)
-                logger.info(f"Analysis completed for target: {target_name}")
+                logger.info(f"Analysis completed and tracker updated for target: {target_name}")
             except Exception as e:
                 logger.error(f"Analysis failed: {str(e)}")
+                logger.error(f"Full traceback: {traceback.format_exc()}")
                 tracker.error(str(e))
         
         # Start background thread

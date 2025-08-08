@@ -9,8 +9,9 @@ import os
 class lipinski_plots:
     df = 0
 
-    def __init__(self, df):
+    def __init__(self, df, file_prefix=""):
         self.df = df
+        self.file_prefix = file_prefix
         # Create output directory if it doesn't exist
         self.output_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'outputs')
         os.makedirs(self.output_dir, exist_ok=True)
@@ -23,7 +24,8 @@ class lipinski_plots:
         plt.xlabel('Bioactivity class', fontsize=14, fontweight='bold')
         plt.ylabel('Frequency', fontsize=14, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_bioactivity_class.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_bioactivity_class.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def scatter_plot(self, df):
@@ -35,7 +37,8 @@ class lipinski_plots:
         plt.ylabel('LogP', fontsize=14, fontweight='bold')
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_MW_vs_LogP.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_MW_vs_LogP.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def pIC_50_plot(self, df):
@@ -46,7 +49,8 @@ class lipinski_plots:
         plt.xlabel('Bioactivity class', fontsize=14, fontweight='bold')
         plt.ylabel('pIC50 value', fontsize=14, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_ic50.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_ic50.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def mol_weight(self, df):
@@ -57,7 +61,8 @@ class lipinski_plots:
         plt.xlabel('Bioactivity class', fontsize=14, fontweight='bold')
         plt.ylabel('MW', fontsize=14, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_MW.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_MW.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def logP(self, df):
@@ -68,7 +73,8 @@ class lipinski_plots:
         plt.xlabel('Bioactivity class', fontsize=14, fontweight='bold')
         plt.ylabel('LogP', fontsize=14, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_LogP.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_LogP.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def num_hdonors(self, df):
@@ -79,7 +85,8 @@ class lipinski_plots:
         plt.xlabel('Bioactivity class', fontsize=14, fontweight='bold')
         plt.ylabel('NumHDonors', fontsize=14, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_NumHDonors.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_NumHDonors.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def num_hacceptors(self, df):
@@ -90,7 +97,8 @@ class lipinski_plots:
         plt.xlabel('Bioactivity class', fontsize=14, fontweight='bold')
         plt.ylabel('NumHAcceptors', fontsize=14, fontweight='bold')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'plot_NumHAcceptors.png'), dpi=300, bbox_inches='tight')
+        filename = f'{self.file_prefix}plot_NumHAcceptors.png'
+        plt.savefig(os.path.join(self.output_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
     def prediction_scatter(self, experimental_pic50, predicted_pic50):
