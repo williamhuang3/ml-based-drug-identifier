@@ -1,0 +1,23 @@
+{
+  "name": "DrugPredict",
+  "short_name": "DrugPredict",
+  "description": "AI-powered bioinformatics application for drug discovery and molecular analysis",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#3B82F6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["medical", "science", "productivity"],
+  "lang": "en"
+}

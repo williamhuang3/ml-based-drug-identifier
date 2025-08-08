@@ -7,6 +7,14 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'DrugPredict',
   description: 'AI-powered bioinformatics application for drug discovery and molecular analysis',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-16x16.svg', sizes: '16x16', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.svg',
+  },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({
