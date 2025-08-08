@@ -3,6 +3,7 @@ render.yaml
 railway.yaml
 flask_app.py
 main.py
+lipinski_plots.py
 requirements.txt
 *.py
 __pycache__/

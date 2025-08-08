@@ -10,6 +10,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Prevent duplicate Python files in root (should only be in backend/)
+/flask_app.py
+/main.py  
+/lipinski_plots.py
+
 # Python
 __pycache__/
 *.py[cod]
