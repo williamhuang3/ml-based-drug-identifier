@@ -10,6 +10,8 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors, Lipinski
 import sys
 import os
+import time
+import subprocess
 sys.path.append(os.path.dirname(__file__))
 from lipinski_plots import lipinski_plots as lp
 from numpy.random import seed
@@ -89,6 +91,8 @@ def retrievedata_for_target(target_name, limit='1000'):
             # Keep the original human-readable name
         
         activity = new_client.activity
+        logger.info("Querying ChemBL activity database...")
+        query_start = time.time()
         activity_query = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50")
         
         # Apply limit if specified
@@ -100,6 +104,9 @@ def retrievedata_for_target(target_name, limit='1000'):
             logger.info(f"Limiting to {limit_int} compounds")
             res = activity_query[:limit_int]
         
+        logger.info(f"ChemBL API query completed in {time.time() - query_start:.2f} seconds")
+        
+        logger.info("Converting ChemBL results to DataFrame...")
         df = pd.DataFrame.from_dict(res)
         
         if df.empty or len(df) < 10:
@@ -205,12 +212,15 @@ def add_lipinski_descriptors(df):
     Returns:
         pd.DataFrame: Data with Lipinski descriptors
     """
-    logger.info("Calculating Lipinski descriptors...")
+    logger.info(f"Calculating Lipinski descriptors for {len(df)} compounds...")
     
     descriptors_data = []
     failed_smiles = 0
     
-    for smiles in df.canonical_smiles:
+    for i, smiles in enumerate(df.canonical_smiles):
+        if i % 100 == 0:  # Log progress every 100 compounds
+            logger.info(f"Processing Lipinski descriptors: {i+1}/{len(df)} compounds")
+        
         try:
             mol = Chem.MolFromSmiles(smiles)
             if mol is not None:
@@ -225,11 +235,14 @@ def add_lipinski_descriptors(df):
                 descriptors_data.append([np.nan, np.nan, np.nan, np.nan])
                 failed_smiles += 1
         except Exception as e:
+            logger.warning(f"Failed to process SMILES at index {i}: {str(e)}")
             descriptors_data.append([np.nan, np.nan, np.nan, np.nan])
             failed_smiles += 1
     
     if failed_smiles > 0:
         logger.warning(f"Failed to calculate descriptors for {failed_smiles} compounds")
+    
+    logger.info("Lipinski descriptor calculation completed, creating DataFrame...")
     
     # Create descriptors DataFrame
     descriptors_df = pd.DataFrame(
@@ -241,9 +254,11 @@ def add_lipinski_descriptors(df):
     result_df = pd.concat([df.reset_index(drop=True), descriptors_df], axis=1)
     
     # Remove rows with NaN descriptors
+    initial_count = len(result_df)
     result_df = result_df.dropna()
+    final_count = len(result_df)
     
-    logger.info(f"Lipinski descriptors calculated for {len(result_df)} compounds")
+    logger.info(f"Lipinski descriptors calculated: {initial_count} → {final_count} compounds (removed {initial_count - final_count} with NaN values)")
     return result_df
 
 def process_ic50_values(df):
@@ -473,19 +488,36 @@ def run_ml_analysis(df):
     
     try:
         # Prepare data for PaDEL descriptors
+        logger.info("Preparing data for PaDEL descriptor calculation...")
         processed_dir = get_data_directory('processed')
         os.makedirs(processed_dir, exist_ok=True)
         
         df_selection = df[['canonical_smiles', 'molecule_chembl_id']]
         smi_file = os.path.join(processed_dir, 'molecule.smi')
         df_selection.to_csv(smi_file, sep='\t', index=False, header=False)
+        logger.info(f"Saved {len(df_selection)} compounds to {smi_file}")
         
         # Run PaDEL descriptor calculation
-        logger.info("Calculating PaDEL descriptors...")
-        result = subprocess.run(['bash', 'scripts/padel.sh'], capture_output=True, text=True, timeout=300)
+        logger.info("Starting PaDEL descriptor calculation (this may take several minutes for large datasets)...")
+        start_time = time.time()
         
-        if result.returncode != 0:
-            logger.warning("PaDEL calculation failed, using simplified ML analysis")
+        try:
+            result = subprocess.run(['bash', 'scripts/padel.sh'], capture_output=True, text=True, timeout=600)
+            elapsed_time = time.time() - start_time
+            logger.info(f"PaDEL calculation completed in {elapsed_time:.2f} seconds")
+            
+            if result.returncode != 0:
+                logger.error(f"PaDEL calculation failed with return code {result.returncode}")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
+                logger.warning("Falling back to simplified ML analysis")
+                return run_simplified_ml(df)
+            else:
+                logger.info("PaDEL calculation successful")
+                
+        except subprocess.TimeoutExpired:
+            logger.error("PaDEL calculation timed out after 10 minutes")
+            logger.warning("Falling back to simplified ML analysis")
             return run_simplified_ml(df)
         
         # Load PaDEL descriptors
@@ -494,21 +526,30 @@ def run_ml_analysis(df):
             logger.warning("PaDEL output not found, using simplified ML analysis")
             return run_simplified_ml(df)
         
+        logger.info(f"Loading PaDEL descriptors from {descriptors_file}...")
         X = pd.read_csv(descriptors_file).drop(columns=['Name'])
+        logger.info(f"Loaded descriptors: {X.shape[0]} compounds x {X.shape[1]} features")
         Y = df['pIC50']
         
         # Feature selection
+        logger.info("Performing feature selection...")
         selector = VarianceThreshold(threshold=(.8 * (1 - .8)))
         X_selected = selector.fit_transform(X)
+        logger.info(f"Feature selection: {X.shape[1]} → {X_selected.shape[1]} features")
         
         # Train-test split
+        logger.info("Splitting data for training and testing...")
         X_train, X_test, Y_train, Y_test = train_test_split(X_selected, Y, test_size=0.2, random_state=42)
+        logger.info(f"Training set: {X_train.shape[0]} compounds, Test set: {X_test.shape[0]} compounds")
         
         # Train Random Forest
+        logger.info("Training Random Forest model...")
         model = RandomForestRegressor(n_estimators=100, random_state=42)
         model.fit(X_train, Y_train)
+        logger.info("Model training completed")
         
         # Make predictions
+        logger.info("Making predictions on test set...")
         predictions = model.predict(X_test)
         
         # Calculate metrics
@@ -637,32 +678,43 @@ def run_complete_analysis_pipeline(target_name, limit='1000', tracker=None):
     """
     Main function to run the complete analysis pipeline
     """
+    pipeline_start = time.time()
     logger.info(f"Starting complete analysis for: {target_name} with limit: {limit}")
     
     # Step 1: Retrieve data
+    step_start = time.time()
     if tracker:
         tracker.update('retrieving', 15, f'Searching ChemBL database for {target_name}...')
     df_raw, display_target_name, target_id = retrievedata_for_target(target_name, limit)
+    logger.info(f"Step 1 (Data retrieval) completed in {time.time() - step_start:.2f} seconds")
     
     # Step 2: Preprocess
+    step_start = time.time()
     if tracker:
         tracker.update('preprocessing', 25, 'Cleaning and filtering compound data...')
     df_preprocessed = preprocess_data(df_raw)
+    logger.info(f"Step 2 (Preprocessing) completed in {time.time() - step_start:.2f} seconds")
     
     # Step 3: Label compounds
+    step_start = time.time()
     if tracker:
         tracker.update('labeling', 35, 'Classifying compounds by bioactivity...')
     df_labeled = labelcompounds_data(df_preprocessed)
+    logger.info(f"Step 3 (Compound labeling) completed in {time.time() - step_start:.2f} seconds")
     
     # Step 4: Add descriptors
+    step_start = time.time()
     if tracker:
         tracker.update('descriptors', 50, 'Computing molecular properties and Lipinski descriptors...')
     df_with_descriptors = add_lipinski_descriptors(df_labeled)
+    logger.info(f"Step 4 (Lipinski descriptors) completed in {time.time() - step_start:.2f} seconds - THIS IS A POTENTIAL BOTTLENECK")
     
     # Step 5: Process IC50
+    step_start = time.time()
     if tracker:
         tracker.update('analysis', 60, 'Processing IC50 values and performing statistical analysis...')
     df_final = process_ic50_values(df_with_descriptors)
+    logger.info(f"Step 5 (IC50 processing) completed in {time.time() - step_start:.2f} seconds")
     
     # Save final dataset
     processed_dir = get_data_directory('processed')
@@ -672,20 +724,27 @@ def run_complete_analysis_pipeline(target_name, limit='1000', tracker=None):
     logger.info(f"Final dataset saved to: {final_dataset_path}")
     
     # Step 6: Statistical analysis
+    step_start = time.time()
     if tracker:
         tracker.update('analysis', 70, 'Performing Mann-Whitney U tests...')
     stats_results = perform_statistical_analysis(df_final)
+    logger.info(f"Step 6 (Statistical analysis) completed in {time.time() - step_start:.2f} seconds")
     
     # Step 7: Generate plots
+    step_start = time.time()
     if tracker:
         tracker.update('plotting', 80, 'Creating visualization plots and charts...')
     plot_results = generate_plots(df_final)
+    logger.info(f"Step 7 (Plot generation) completed in {time.time() - step_start:.2f} seconds")
     
     # Step 8: ML analysis (after plots for proper progress order)
+    step_start = time.time()
     if tracker:
         tracker.update('ml', 90, 'Training Random Forest model and making predictions...')
     ml_results = run_ml_analysis(df_final)
+    logger.info(f"Step 8 (ML analysis) completed in {time.time() - step_start:.2f} seconds - THIS IS ANOTHER POTENTIAL BOTTLENECK")
     
-    logger.info("Analysis pipeline completed successfully")
+    total_time = time.time() - pipeline_start
+    logger.info(f"COMPLETE ANALYSIS PIPELINE finished in {total_time:.2f} seconds total")
     
     return df_final, display_target_name, target_id, stats_results, plot_results, ml_results
