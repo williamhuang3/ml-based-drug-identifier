@@ -278,6 +278,12 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
             plot_copy['imagePath'] = base_url + plot_copy['imagePath']
         absolute_plots.append(plot_copy)
     
+    # Convert regression plot URL in ML results to absolute
+    ml_results_copy = ml_results.copy()
+    if ml_results_copy.get('regressionPlot') and ml_results_copy['regressionPlot'].get('imagePath'):
+        if ml_results_copy['regressionPlot']['imagePath'].startswith('/outputs/'):
+            ml_results_copy['regressionPlot']['imagePath'] = base_url + ml_results_copy['regressionPlot']['imagePath']
+    
     logger.info(f"Converted {len(absolute_plots)} plot URLs to absolute paths with base: {base_url}")
     
     return {
@@ -292,7 +298,7 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
         "compounds": compounds,
         "statistics": stats_results,
         "plots": absolute_plots,
-        "predictions": ml_results,
+        "predictions": ml_results_copy,
         "timestamp": datetime.now().isoformat()
     }
 

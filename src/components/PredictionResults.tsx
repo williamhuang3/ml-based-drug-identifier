@@ -15,6 +15,11 @@ interface PredictionResultsProps {
       trainingSize: number
       testSize: number
     }
+    regressionPlot?: {
+      name: string
+      description: string
+      imagePath: string
+    }
     topPredictions?: Array<{
       compound: string
       actual: number
@@ -25,7 +30,7 @@ interface PredictionResultsProps {
 }
 
 export default function PredictionResults({ predictions }: PredictionResultsProps) {
-  const { metrics, modelInfo, topPredictions = [] } = predictions
+  const { metrics, modelInfo, regressionPlot, topPredictions = [] } = predictions
 
   const defaultMetrics = {
     r2Score: 0.847,
@@ -128,30 +133,51 @@ export default function PredictionResults({ predictions }: PredictionResultsProp
       </div>
 
       {/* Regression Plot */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Predicted vs Experimental pIC50</h4>
-        <div className="aspect-square bg-gray-50 flex items-center justify-center rounded-lg">
-          <img
-            src="/outputs/predicted_experimental_pIC50.png"
-            alt="Predicted vs Experimental pIC50"
-            className="max-w-full max-h-full object-contain"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.style.display = 'none'
-              target.nextElementSibling!.classList.remove('hidden')
-            }}
-          />
-          <div className="hidden flex-col items-center justify-center text-gray-400">
-            <div className="text-gray-400 mb-2">
-              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+      {regressionPlot && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">{regressionPlot.name}</h4>
+          <div className="aspect-square bg-gray-50 flex items-center justify-center rounded-lg">
+            <img
+              src={regressionPlot.imagePath}
+              alt={regressionPlot.name}
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.style.display = 'none'
+                target.nextElementSibling!.classList.remove('hidden')
+              }}
+            />
+            <div className="hidden flex-col items-center justify-center text-gray-400">
+              <div className="text-gray-400 mb-2">
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <p className="text-sm">Regression plot failed to load</p>
+              <p className="text-xs text-gray-500 mt-1">Check analysis results</p>
             </div>
-            <p className="text-sm">Regression plot will appear here</p>
-            <p className="text-xs text-gray-500 mt-1">Run analysis to generate</p>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">{regressionPlot.description}</p>
+        </div>
+      )}
+
+      {/* Fallback when no regression plot is available */}
+      {!regressionPlot && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">Predicted vs Experimental pIC50</h4>
+          <div className="aspect-square bg-gray-50 flex items-center justify-center rounded-lg">
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <div className="text-gray-400 mb-2">
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <p className="text-sm">Regression plot will appear here</p>
+              <p className="text-xs text-gray-500 mt-1">Run analysis to generate</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Sample Predictions */}
       {topPredictions.length > 0 && (
