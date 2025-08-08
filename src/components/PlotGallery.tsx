@@ -83,9 +83,9 @@ export default function PlotGallery({ plots }: PlotGalleryProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-semibold text-gray-900">Data Visualizations</h3>
+      <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">Data Visualizations</h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {plotsToShow.map((plot, index) => (
           <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
             <div className="aspect-square bg-gray-50 flex items-center justify-center relative">

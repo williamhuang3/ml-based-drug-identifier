@@ -61,7 +61,7 @@ export default function CompoundTable({ compounds }: CompoundTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-semibold text-gray-900">Compound Analysis</h3>
+        <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">Compound Analysis</h3>
         <button
           onClick={downloadCSV}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"

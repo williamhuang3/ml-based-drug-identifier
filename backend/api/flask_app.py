@@ -234,13 +234,13 @@ def run_complete_analysis(target_name, limit='1000', tracker=None):
             tracker.update('retrieving', 10, 'Starting data retrieval from ChemBL...')
         
         # Run the complete analysis pipeline with the specified limit
-        df_final, target_id, stats_results, plot_results, ml_results = run_complete_analysis_pipeline(target_name, limit, tracker)
+        df_final, display_target_name, target_id, stats_results, plot_results, ml_results = run_complete_analysis_pipeline(target_name, limit, tracker)
         
         if tracker:
             tracker.update('finalizing', 95, 'Compiling final results...')
         
-        # Compile results
-        results = compile_results(target_name, target_id, df_final, stats_results, plot_results, ml_results, limit)
+        # Compile results - use display_target_name for user-friendly display
+        results = compile_results(display_target_name, target_id, df_final, stats_results, plot_results, ml_results, limit)
         
         return results
         

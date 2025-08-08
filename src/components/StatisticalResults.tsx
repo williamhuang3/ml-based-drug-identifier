@@ -35,7 +35,7 @@ export default function StatisticalResults({ statistics }: StatisticalResultsPro
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-semibold text-gray-900">Statistical Analysis</h3>
+      <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">Statistical Analysis</h3>
       
       {summary && (
         <div className="bg-gray-50 rounded-lg p-6">

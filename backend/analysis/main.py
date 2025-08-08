@@ -55,18 +55,27 @@ def retrievedata_for_target(target_name, limit='1000'):
         limit (str): Number of compounds to retrieve ('all' for all available)
         
     Returns:
-        pd.DataFrame: Raw compound data from ChemBL
+        tuple: (pd.DataFrame, str, str) - (data, original_target_name, chembl_id)
     """
     try:
         logger.info(f"Searching for target: {target_name}")
         
         target = new_client.target
+        original_target_name = target_name  # Store the original name for display
         
         # Check if target_name is a ChemBL ID (starts with CHEMBL)
         if target_name.upper().startswith('CHEMBL'):
             # Use the ID directly
             selected_target = target_name.upper()
             logger.info(f"Using provided ChemBL ID: {selected_target}")
+            # For ChemBL IDs, try to get the human-readable name
+            try:
+                target_details = target.get(selected_target)
+                if target_details and 'pref_name' in target_details:
+                    original_target_name = target_details['pref_name']
+            except:
+                # If we can't get the name, keep the ChemBL ID
+                pass
         else:
             # Search by name and select first result
             target_query = target.search(target_name)
@@ -77,6 +86,7 @@ def retrievedata_for_target(target_name, limit='1000'):
                 
             selected_target = targets.target_chembl_id[0]
             logger.info(f"Found target by name search: {selected_target}")
+            # Keep the original human-readable name
         
         activity = new_client.activity
         activity_query = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50")
@@ -95,8 +105,8 @@ def retrievedata_for_target(target_name, limit='1000'):
         if df.empty or len(df) < 10:
             raise ValueError(f"Insufficient IC50 data for target: {target_name} (found {len(df)} compounds, minimum 10 required)")
             
-        logger.info(f"Retrieved {len(df)} compounds for {target_name}")
-        return df, selected_target
+        logger.info(f"Retrieved {len(df)} compounds for {original_target_name}")
+        return df, original_target_name, selected_target
         
     except Exception as e:
         logger.error(f"Failed to retrieve data for {target_name}: {str(e)}")
@@ -632,7 +642,7 @@ def run_complete_analysis_pipeline(target_name, limit='1000', tracker=None):
     # Step 1: Retrieve data
     if tracker:
         tracker.update('retrieving', 15, f'Searching ChemBL database for {target_name}...')
-    df_raw, target_id = retrievedata_for_target(target_name, limit)
+    df_raw, display_target_name, target_id = retrievedata_for_target(target_name, limit)
     
     # Step 2: Preprocess
     if tracker:
@@ -678,4 +688,4 @@ def run_complete_analysis_pipeline(target_name, limit='1000', tracker=None):
     
     logger.info("Analysis pipeline completed successfully")
     
-    return df_final, target_id, stats_results, plot_results, ml_results
+    return df_final, display_target_name, target_id, stats_results, plot_results, ml_results

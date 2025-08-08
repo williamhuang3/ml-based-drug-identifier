@@ -65,7 +65,7 @@ export default function PredictionResults({ predictions }: PredictionResultsProp
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-semibold text-gray-900">Machine Learning Predictions</h3>
+      <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">Machine Learning Predictions</h3>
       
       {/* Model Information */}
       <div className="bg-gray-50 rounded-lg p-6">
