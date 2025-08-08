@@ -1,109 +1,212 @@
-# ML-Based Drug Identifier
+# DrugPredict
 
-## Overview
+A full-stack bioinformatics application that combines Python-based molecular analysis with a modern React/Next.js web interface for AI-powered drug discovery and compound evaluation.
 
-This project aims to streamline the early phases of drug discovery using AI and bioinformatics, focusing on identifying and evaluating potential drug candidates. By harnessing the ChemBL Database, it searches for compounds that interact with specific chemical or biological targets—using Histone Deacetylase 1 as the primary example. The project assesses these compounds based on the Lipinski Rule of 5 and other molecular descriptors, classifying them into active or inactive groups based on their IC50 values. The IC50 metric is crucial as it measures the concentration required to inhibit a biological process by half, offering insight into a compound's drug efficacy.
+## 🔬 Features
 
-Furthermore, the project employs the PaDEL Descriptors for a more in-depth analysis, aiming to predict the IC50 values of compounds using Random Forest Regression. This approach not only facilitates the identification of promising drug candidates but also significantly reduces research and development costs by circumventing the need for extensive experimental testing.
+### Backend (Python)
+- **ChemBL Database Integration**: Query biological targets and retrieve compound activity data
+- **Molecular Descriptors**: Calculate Lipinski descriptors (MW, LogP, H-donors, H-acceptors)
+- **Bioactivity Classification**: Classify compounds as active/inactive/intermediate based on IC50 values  
+- **Statistical Analysis**: Mann-Whitney U tests comparing active vs inactive compounds
+- **Machine Learning**: Random Forest regression for IC50 prediction using PaDEL descriptors
+- **Data Visualization**: Generate publication-ready plots with matplotlib/seaborn
 
-## Dependencies
+### Frontend (React/Next.js)
+- **Interactive Web Interface**: Modern, responsive UI built with React and Tailwind CSS
+- **Real-time Analysis**: Submit queries and view results through an intuitive dashboard
+- **Data Visualization**: Interactive charts and plots displaying molecular analysis results
+- **Tabbed Results View**: Organized display of compounds, statistics, plots, and ML predictions
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-To run this project, the following dependencies are required:
+## 🛠 Technology Stack
 
-- **ChemBL and RDKit**:
-  ```python
-  conda install -c rdkit rdkit -y
-  ```
-- **Bash** (either through Conda or Git Desktop):
-  ```python
-  conda install -c conda-forge bash
-  ```
-- **TextWrap3**:
-  ```python
-  pip install textwrap3
-  ```
-- **Other Essential Libraries** (Matplotlib, Seaborn, Pandas, Numpy, Scikit-Learn, SciPy):
-  ```python
-  pip install matplotlib seaborn pandas numpy scikit-learn scipy
-  ```
+### Backend
+- **Python 3.8+** with scientific computing libraries
+- **Flask** for REST API backend
+- **ChemBL Web Resource Client** for database queries
+- **RDKit** for molecular descriptor calculations
+- **scikit-learn** for machine learning
+- **matplotlib/seaborn** for data visualization
+- **pandas/numpy** for data processing
 
-## Content
+### Frontend  
+- **Next.js 14** with App Router
+- **React 18** with TypeScript
+- **Tailwind CSS 3.4.1** for styling
+- **Recharts** for interactive data visualization
+- **Lucide React** for modern icons
 
-- [Introduction](https://github.com/williamhuang3/bioinformatics-drug-project/#Overview)
-  - Overview of the project, its objectives, and the methodology used.
-- [Getting Started and Example Inputs](https://github.com/williamhuang3/bioinformatics-drug-project/#Getting-Started)
-  - Getting started and showing suggested data for trial runs, including CHEMBL325, CHEMBL220, and CHEMBL3927, with CHEMBL325 as the primary example.
-- [Plotting](https://github.com/williamhuang3/bioinformatics-drug-project/#Results-and-Visualization)
-  - Details on how data for the Lipinski Descriptors are plotted, including examples.
-- [Regression](https://github.com/williamhuang3/bioinformatics-drug-project/#Predictive-Modeling)
-  - Explanation of how Random Forest Regression is utilized to predict IC50 values.
-- [More Info and Credits](https://github.com/williamhuang3/bioinformatics-drug-project/#More-Info-And-Credits)
-  - Additional resources and acknowledgments.
+## 🚀 Quick Start
 
-## Getting Started
+### Prerequisites
+- **Node.js 18+** and npm
+- **Python 3.8+** with conda/pip
+- **Git** for version control
 
-To initiate drug discovery, follow the installation steps to set up the environment and install necessary dependencies. Next, select a target from the suggested list or choose one of interest to you. The process involves extracting data on compounds interacting with the target, analyzing their properties according to the Lipinski Rule of 5, and employing statistical and machine learning models to evaluate their potential as drug candidates.
+### Installation
 
-Data to try: CHEMBL325 (Histone deacetylase 1), CHEMBL220 (Homo Sapiens - Acetylcholinesterase), 	CHEMBL3927 (SARS coronavirus 3C-like proteinase)
+1. **Clone the repository**
+```bash
+git clone https://github.com/williamhuang3/ml-based-drug-identifier.git
+cd ml-based-drug-identifier
+```
 
-In this example, I used CHEMBL325:
-  
-  
-  ![Example Screen](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/Screenshot%20(24).png)
+2. **Set up Python environment**
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
 
-## Results and Visualization
+# Or using conda
+conda install -c rdkit rdkit -y
+conda install -c conda-forge bash
+```
 
-The project includes plotting the evaluated data using Matplotlib and Seaborn to visualize the distribution and comparison between active and inactive compounds across different molecular descriptors. These plots are crucial for understanding the characteristics that contribute to a compound's effectiveness and bioactivity.
-  <h4>Molecular Weight: Active vs. Inactive</h4>
-  
-  
-  ![plot_MW.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_MW.png)
-  <h4>Molecular Weight vs. Log(P): Active vs. Inactive</h4>
-  
-  
-  ![plot_MW_vs_LogP.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_MW_vs_LogP.png)
-  <h4>Number of Hydrogen Acceptors: Active vs. Inactive</h4>
-  
-  
-  ![plot_NumHAcceptors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_NumHAcceptors.png)
-   <h4>Number of Hydrogen Donors: Active vs. Inactive</h4>
-   
-   
-  ![plot_NumHDonors.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_NumHDonors.png) 
-  <h4>IC50 Values: Active vs. Inactive</h4>
-  
-  
-  ![plot_ic50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_ic50.png)
-  <h4>LogP: Active vs. Inactive</h4>
-  
-  
-  ![LogP](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_LogP.png)
-  <h4>Frequencies: Active vs. Inactive</h4>
-  
-  
-  ![plot_bioactivity_class.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/plot_bioactivity_class.png)
-  
-## Predictive Modeling
+3. **Set up Node.js environment**
+```bash
+# Install frontend dependencies
+npm install
+```
 
-Using PaDEL Descriptors and Random Forest Regression, the project aims to predict the IC50 values of compounds. The model learns to correlate the descriptors (features) with the IC50 values (target) across the training dataset. Random Forest improves prediction accuracy by creating a forest of decision trees where each tree is trained on a random subset of the data and features. This randomness helps in making the model more robust and less prone to overfitting to the training data, which is great for assessing a compound's viability as a drug candidate without extensive laboratory testing, offering a cost-effective and efficient alternative to traditional methods.
+4. **Start the development servers**
+```bash
+# Option 1: Start both servers together
+npm run dev-full
 
- ![predicted_experimental_pIC50.png](https://github.com/williamhuang3/bioinformatics-drug-project/blob/main/assets/predicted_experimental_pIC50.png)
- 
-## Conclusion
+# Option 2: Start servers separately (two terminals)
+npm run flask-dev    # Terminal 1: Flask backend
+npm run dev          # Terminal 2: Next.js frontend
+```
 
-This project represents a significant tool in the field of drug discovery, leveraging bioinformatics and artificial intelligence to streamline the search and evaluation of new drug candidates. By reducing the need for extensive experimental testing, it shows promise in accelerating and cutting costs in the development of effective treatments for a variety of conditions.
+5. **Open your browser**
+Navigate to [http://localhost:3000](http://localhost:3000) (frontend) or [http://localhost:5001](http://localhost:5001) (API)
 
-## More Info And Credits
- [IC50 Definition](https://en.wikipedia.org/wiki/IC50)
-  
-  
- [Lipinski Rule of 5](https://en.wikipedia.org/wiki/Lipinski%27s_rule_of_five#:~:text=Lipinski's%20rule%20states%20that%2C%20in,all%20nitrogen%20or%20oxygen%20atoms)
-  
-  
- [ChemBL Database](https://www.ebi.ac.uk/chembl/)
-  
-  
- [Random Forest Regression](https://levelup.gitconnected.com/random-forest-regression-209c0f354c84?gi=302f1da7802c#:~:text=Random%20Forest%20Regression%20is%20a%20supervised%20learning%20algorithm%20that%20uses,prediction%20than%20a%20single%20model.)
+## 📁 Project Structure
 
-This project was inspired by resources and tutorials from Data Professor on YouTube and machinelearningmastery.com
-Written by William Huang
+```
+DrugPredict/
+├── src/                    # Next.js source code
+│   ├── app/               # App router pages and API routes
+│   │   ├── api/          # Backend API integration
+│   │   ├── globals.css   # Global styles
+│   │   ├── layout.tsx    # Root layout
+│   │   └── page.tsx      # Home page
+│   └── components/        # React components
+│       ├── Header.tsx
+│       ├── SearchForm.tsx
+│       ├── ResultsDisplay.tsx
+│       └── ...
+├── public/                # Static assets for Next.js
+│   └── assets/           # Symlink to /assets for web serving
+├── assets/               # Generated plots and analysis outputs
+├── main.py              # Core Python analysis pipeline (Flask-ready)
+├── flask_app.py         # Flask REST API backend  
+├── lipinski_plots.py    # Plotting utilities
+├── padel.sh            # PaDEL descriptor script
+├── requirements.txt    # Python dependencies
+├── package.json       # Node.js dependencies
+└── README.md
+```
+
+## 🧪 Usage
+
+### Web Interface
+
+1. **Start the application** with `npm run dev`
+2. **Enter a target name** (e.g., "Coronavirus", "EGFR") or ChemBL ID
+3. **Click "Search & Analyze"** to run the analysis pipeline
+4. **View results** in the organized tabs:
+   - **Overview**: Summary statistics and target information
+   - **Compounds**: Detailed compound data table
+   - **Statistics**: Mann-Whitney U test results
+   - **Visualizations**: Molecular descriptor plots
+   - **ML Predictions**: Random Forest regression results
+
+### Command Line (Python)
+
+```bash
+# Run the Python analysis directly
+python main.py
+```
+
+Follow the prompts to:
+1. Enter a biological target for analysis
+2. Wait for ChemBL data retrieval and processing
+3. Run PaDEL descriptor calculation: `bash padel.sh`
+4. View generated plots and statistical results
+
+## 📊 Analysis Pipeline
+
+1. **Target Query**: Search ChemBL database for compounds targeting specific proteins
+2. **Data Preprocessing**: Filter and clean compound data, remove duplicates
+3. **Bioactivity Classification**: Label compounds based on IC50 thresholds
+4. **Molecular Descriptors**: Calculate Lipinski descriptors using RDKit
+5. **Statistical Testing**: Perform Mann-Whitney U tests between active/inactive groups
+6. **Visualization**: Generate box plots, scatter plots, and distribution charts
+7. **Machine Learning**: Train Random Forest model using PaDEL descriptors
+8. **Prediction**: Generate IC50 predictions and evaluate model performance
+
+## 🎯 Key Metrics
+
+- **IC50 Classification Thresholds**:
+  - Active: ≤ 1,000 nM
+  - Intermediate: 1,000 - 10,000 nM  
+  - Inactive: ≥ 10,000 nM
+
+- **Lipinski Descriptors**:
+  - Molecular Weight (MW)
+  - Lipophilicity (LogP)
+  - Hydrogen Bond Donors
+  - Hydrogen Bond Acceptors
+
+- **Model Performance Metrics**:
+  - R² Score (coefficient of determination)
+  - RMSE (Root Mean Square Error)
+  - MAE (Mean Absolute Error)
+
+## 🚀 Deployment
+
+### Development
+```bash
+npm run dev-full     # Start both Flask backend and Next.js frontend
+npm run flask-dev    # Start Flask backend only
+npm run dev          # Start Next.js frontend only
+npm run build        # Build for production
+npm run start        # Start production server
+```
+
+### Production
+- Deploy to **Vercel** (recommended for Next.js)
+- Deploy to **Heroku**, **AWS**, or any Node.js hosting platform
+- Ensure Python environment is available for backend processing
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and add tests
+4. Commit changes: `git commit -am 'Add new feature'`
+5. Push to branch: `git push origin feature-name`
+6. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **William Huang** - Project Creator
+- **Data Professor** (YouTube) - Inspiration and tutorials
+- **ChemBL Database** - Compound and bioactivity data
+- **RDKit** - Molecular informatics toolkit
+- **Next.js Team** - React framework
+
+## 📞 Support
+
+For questions, issues, or contributions:
+- Open an issue on [GitHub](https://github.com/williamhuang3/ml-based-drug-identifier/issues)
+- Contact: [your-email@example.com]
+
+---
+
+*DrugPredict - Built with ❤️ for the bioinformatics and drug discovery community*

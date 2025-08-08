@@ -4,5 +4,7 @@ numpy
 seaborn
 rdkit
 scipy
-sklearn
-textwrap3
+scikit-learn
+chembl_webresource_client
+flask
+flask-cors
