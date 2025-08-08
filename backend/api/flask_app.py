@@ -278,6 +278,8 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
             plot_copy['imagePath'] = base_url + plot_copy['imagePath']
         absolute_plots.append(plot_copy)
     
+    logger.info(f"Converted {len(absolute_plots)} plot URLs to absolute paths with base: {base_url}")
+    
     return {
         "success": True,
         "targetName": target_name,
