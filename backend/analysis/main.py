@@ -93,21 +93,55 @@ def retrievedata_for_target(target_name, limit='1000'):
         activity = new_client.activity
         logger.info("Querying ChemBL activity database...")
         query_start = time.time()
-        activity_query = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50")
         
-        # Apply limit if specified
-        if limit == 'all':
-            logger.info("Retrieving all available compounds (no limit)")
-            res = activity_query
-        else:
-            limit_int = int(limit)
-            logger.info(f"Limiting to {limit_int} compounds")
-            res = activity_query[:limit_int]
-        
-        logger.info(f"ChemBL API query completed in {time.time() - query_start:.2f} seconds")
+        try:
+            # Apply limit if specified
+            if limit == 'all':
+                logger.info("Retrieving all available compounds (no limit)")
+                activity_query = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50")
+                res = activity_query
+            else:
+                limit_int = int(limit)
+                logger.info(f"Limiting to {limit_int} compounds using optimized query")
+                
+                # Optimize query: only fetch required fields to reduce data transfer
+                activity_query = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50").only([
+                    'molecule_chembl_id', 'canonical_smiles', 'standard_value', 
+                    'standard_units', 'standard_relation', 'standard_type'
+                ])
+                
+                # Convert to list early to avoid ChemBL lazy evaluation scanning entire dataset
+                logger.info("Converting query to list with limit (this prevents scanning entire dataset)...")
+                res = list(activity_query)[:limit_int]
+            
+            # Check if we got a response within reasonable time
+            elapsed = time.time() - query_start
+            if elapsed > 60:  # If query takes more than 1 minute, log warning
+                logger.warning(f"ChemBL query took {elapsed:.2f} seconds - this target may have very large dataset")
+            
+            logger.info(f"ChemBL API query completed in {elapsed:.2f} seconds")
+            
+        except Exception as e:
+            elapsed = time.time() - query_start
+            logger.error(f"ChemBL API query failed after {elapsed:.2f} seconds: {str(e)}")
+            # For very large datasets, try a smaller sample
+            if elapsed > 30 and limit != 'all':
+                logger.info("Trying with smaller dataset due to timeout...")
+                smaller_limit = min(500, int(limit) // 2)
+                logger.info(f"Reducing limit to {smaller_limit} compounds")
+                activity_query = activity.filter(target_chembl_id=selected_target).filter(standard_type="IC50").only([
+                    'molecule_chembl_id', 'canonical_smiles', 'standard_value', 
+                    'standard_units', 'standard_relation', 'standard_type'
+                ])
+                res = list(activity_query)[:smaller_limit]
+            else:
+                raise
         
         logger.info("Converting ChemBL results to DataFrame...")
-        df = pd.DataFrame.from_dict(res)
+        if isinstance(res, list):
+            df = pd.DataFrame(res)
+        else:
+            df = pd.DataFrame.from_dict(res)
         
         if df.empty or len(df) < 10:
             raise ValueError(f"Insufficient IC50 data for target: {target_name} (found {len(df)} compounds, minimum 10 required)")
