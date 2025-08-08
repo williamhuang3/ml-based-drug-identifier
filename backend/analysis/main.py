@@ -523,8 +523,8 @@ def run_ml_analysis(df):
                 "algorithm": "Random Forest Regressor",
                 "nEstimators": 100,
                 "features": int(X_selected.shape[1]),
-                "trainingSize": len(X_train),
-                "testSize": len(X_test)
+                "trainingSize": 80,  # 80% training split
+                "testSize": 20       # 20% test split
             },
             "regressionPlot": {
                 "name": "Predicted vs Experimental pIC50",
@@ -578,8 +578,8 @@ def run_simplified_ml(df):
                 "algorithm": "Random Forest Regressor (Lipinski only)",
                 "nEstimators": 100,
                 "features": 4,
-                "trainingSize": len(X_train),
-                "testSize": len(X_test)
+                "trainingSize": 80,  # 80% training split
+                "testSize": 20       # 20% test split
             },
             "regressionPlot": {
                 "name": "Predicted vs Experimental pIC50",
@@ -666,15 +666,15 @@ def run_complete_analysis_pipeline(target_name, limit='1000', tracker=None):
         tracker.update('analysis', 70, 'Performing Mann-Whitney U tests...')
     stats_results = perform_statistical_analysis(df_final)
     
-    # Step 7: ML analysis (before plots so regression plot can be included)
+    # Step 7: Generate plots
     if tracker:
-        tracker.update('ml', 80, 'Training Random Forest model and making predictions...')
-    ml_results = run_ml_analysis(df_final)
-    
-    # Step 8: Generate plots (including regression plot from ML analysis)
-    if tracker:
-        tracker.update('plotting', 90, 'Creating visualization plots and charts...')
+        tracker.update('plotting', 80, 'Creating visualization plots and charts...')
     plot_results = generate_plots(df_final)
+    
+    # Step 8: ML analysis (after plots for proper progress order)
+    if tracker:
+        tracker.update('ml', 90, 'Training Random Forest model and making predictions...')
+    ml_results = run_ml_analysis(df_final)
     
     logger.info("Analysis pipeline completed successfully")
     

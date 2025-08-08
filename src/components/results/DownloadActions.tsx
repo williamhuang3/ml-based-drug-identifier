@@ -69,14 +69,26 @@ export default function DownloadActions({ results, variant = 'header' }: Downloa
   }
 
   const downloadAllPlots = async () => {
-    if (!results?.plots) {
+    const allPlots = []
+    
+    // Add regular plots
+    if (results?.plots) {
+      allPlots.push(...results.plots)
+    }
+    
+    // Add regression plot from ML predictions
+    if (results?.predictions?.regressionPlot) {
+      allPlots.push(results.predictions.regressionPlot)
+    }
+    
+    if (allPlots.length === 0) {
       console.log('No plots available for download')
       return
     }
     
-    console.log('Downloading plots:', results.plots)
+    console.log('Downloading plots:', allPlots)
     
-    for (const plot of results.plots) {
+    for (const plot of allPlots) {
       if (plot.imagePath) {
         const filename = plot.imagePath.split('/').pop() || 'plot.png'
         console.log('Downloading plot:', filename)
@@ -104,13 +116,10 @@ export default function DownloadActions({ results, variant = 'header' }: Downloa
         allPlotPaths.push(...results.plots.map((p: any) => p.imagePath).filter(Boolean))
       }
       
-      // Add ML prediction plot if it exists
-      if (results?.predictions?.plotPath) {
-        allPlotPaths.push(results.predictions.plotPath)
+      // Add regression plot from ML predictions
+      if (results?.predictions?.regressionPlot?.imagePath) {
+        allPlotPaths.push(results.predictions.regressionPlot.imagePath)
       }
-      
-      // Also check for the specific ML plot name
-      allPlotPaths.push('/outputs/predicted_experimental_pIC50.png')
       
       console.log('Processing plot paths:', allPlotPaths)
       
