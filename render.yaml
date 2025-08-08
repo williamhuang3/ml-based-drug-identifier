@@ -3,6 +3,16 @@ services:
     name: drugpredict-backend
     env: python
     buildCommand: pip install -r requirements.txt
+    startCommand: python backend/api/flask_app.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://drug-predict-ml.vercel.app
+    autoDeploy: true- type: web
+    name: drugpredict-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
     startCommand: python flask_app.py
     envVars:
       - key: FLASK_ENV

@@ -21,7 +21,10 @@ from backend.analysis.main import (
 )
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for Next.js frontend
+
+# Configure CORS for production
+allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+CORS(app, origins=allowed_origins)  # Enable CORS for Next.js frontend
 
 # Configure logging
 log_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'logs')
@@ -85,7 +88,7 @@ def health_check():
 def serve_output_file(filename):
     """Serve generated plot files"""
     try:
-        # Define the outputs directory path - same as where lipinski_plots saves files
+        # Define the outputs directory path - relative to root project directory
         outputs_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'outputs')
         file_path = os.path.join(outputs_dir, filename)
         
@@ -283,4 +286,6 @@ def compile_results(target_name, target_id, df_final, stats_results, plot_result
     }
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    port = int(os.getenv('PORT', 5001))
+    debug = os.getenv('FLASK_ENV') != 'production'
+    app.run(debug=debug, host='0.0.0.0', port=port)
